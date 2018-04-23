@@ -11,20 +11,33 @@ page{
 }
 #c{
     background-color: lightgreen;
-    animation: c 5s infinite;
+    animation: c 10s infinite;
 }
 #x{
     background-color: red;
-    animation: x 5s infinite;
+    animation: x 10s infinite;
 }
 #q{
     background-color: coral;
-    animation: q 5s infinite;
+    animation: q 10s infinite;
 }
 #d{
     background-color: black;
     color: white;
-    animation: d 5s infinite;
+    animation: d 10s infinite;
+}
+#s{
+    font-size:36px;
+    display: block;
+    animation: s 10s infinite;
+}
+
+@keyframes s {
+    0% {opacity: 0}
+    70% {opacity: 0}
+    80% {opacity: 100}
+    90% {opacity: 100}
+    100% {opacity: 0}
 }
 @keyframes c{
     0% {opacity: 0}
