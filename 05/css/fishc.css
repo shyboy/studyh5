@@ -1,0 +1,28 @@
+@charset "utf-8";
+* {
+	margin:0;
+	padding:0;
+	list-style-type:none;
+}
+a, img {
+	border:0;
+}
+body {
+	font:12px/180% Arial, Helvetica, sans-serif, "新宋体";
+}
+.demo {
+	width:1000px;
+	margin:60px auto 0 auto;
+}
+
+
+/* timeline */
+#timeline{width:747px;height:300px;overflow:hidden;margin:33px auto;position:relative;background:url('../img/dot.gif') left 45px repeat-x;}
+#dates{width:747px;height:60px;overflow:hidden;}
+#dates li{list-style:none;float:left;width:100px;height:50px;font-size:24px;text-align:center;background:url('../img/biggerdot.png') center bottom no-repeat;}
+#dates a{line-height:38px;padding-bottom:10px;}
+#dates .selected{font-size:38px;}
+#issues{width:747px;height:300px;overflow:hidden;}
+#issues li{width:747px;height:300px;list-style:none;float:left;}
+#issues li h2{color:#ffcc00;font-size:42px;margin:20px 0;text-shadow:#000 1px 1px 2px;}
+#issues li p{font-size:14px;margin-right:70px; margin:10px; font-weight:normal;line-height:22px;}
