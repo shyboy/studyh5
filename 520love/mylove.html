@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
     <title>Our Story of &amp; love</title>
 
     <link type="text/css" rel="stylesheet" href="story/default.css">
@@ -55,7 +55,17 @@
 <body>
 <!--<audio autoplay="autopaly" src="http://7xu24h.com1.z0.glb.clouddn.com/hilove.mp3">-->
 <!--</audio>-->
-
+<audio id="myAudio" src="http://7xu24h.com1.z0.glb.clouddn.com/hilove.mp3" autoplay="autoplay" preload="" loop="loop"></audio>
+<script type="text/javascript">
+    function audioAutoPlay(id){
+        var audio = document.getElementById(id);
+        audio.play();
+        document.addEventListener("WeixinJSBridgeReady", function () {
+            audio.play();
+        }, false);
+    }
+    audioAutoPlay('myAudio');
+</script>
 
 <div id="main">
     <div id="error">本页面采用HTML5编辑，目前您的浏览器无法显示，请换成谷歌(<a
@@ -96,10 +106,7 @@
 
 </div>
 
-<audio id="bgaudio" src="http://7xu24h.com1.z0.glb.clouddn.com/hilove.mp3" loop="loop"></audio>
-<script type="text/javascript">
-    document.getElementById('bgaudio').play();
-</script>
+
 
 <script>
 </script>
