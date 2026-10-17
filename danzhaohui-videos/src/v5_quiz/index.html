@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: #efe6d6 url(../lib/paper.jpg) center/cover; }
+  .top { position: absolute; left: 70px; right: 70px; top: 210px; display: flex; align-items: center; justify-content: space-between; }
+  .top .t { font-family: var(--serif); font-weight: 900; font-size: 58px; letter-spacing: 3px; }
+  .top .t span { color: #a63a3a; }
+  .dots { display: flex; gap: 14px; }
+  .dots i { width: 54px; height: 54px; border-radius: 50%; border: 4px solid #c9bda6; display: flex; align-items: center; justify-content: center; font-style: normal; font-weight: 900; font-size: 30px; color: #fff; }
+  .card { position: absolute; left: 70px; right: 70px; top: 330px; height: 560px; background: #fffdf8; border-radius: 30px; box-shadow: 0 30px 60px rgba(40,37,29,.16); padding: 56px 60px; }
+  .card .no { display: inline-block; font-size: 36px; font-weight: 900; color: #fff; background: #0e5a50; padding: 8px 22px; border-radius: 12px; }
+  .card .qt { margin-top: 44px; font-family: var(--serif); font-weight: 900; font-size: 74px; line-height: 1.38; color: #28251d; }
+  .card .qm { position: absolute; right: 40px; bottom: -30px; font-family: var(--serif); font-weight: 900; font-size: 300px; color: rgba(166,58,58,.07); line-height: 1; }
+  .qseal { position: absolute; right: 46px; bottom: 40px; width: 210px; height: 210px; border-radius: 22px; color: #fff; font-family: var(--brush); font-size: 170px; display: flex; align-items: center; justify-content: center; filter: url(#roughen); box-shadow: inset 0 0 0 8px rgba(255,255,255,.0); }
+  .qseal.qno { background: #c0392b; }
+  .qseal.qyes { background: #0e7a5f; }
+  .btns { position: absolute; left: 70px; right: 70px; top: 930px; display: flex; gap: 40px; }
+  .btn { flex: 1; height: 150px; border-radius: 75px; border: 6px solid #28251d; display: flex; align-items: center; justify-content: center; font-size: 66px; font-weight: 900; position: relative; overflow: hidden; background: #fffdf8; }
+  .btn .f { position: absolute; inset: 0; transform: scaleX(0); transform-origin: left; }
+  .btn span { position: relative; z-index: 1; }
+  .timer { position: absolute; left: 70px; right: 70px; top: 905px; height: 10px; border-radius: 5px; background: rgba(40,37,29,.12); overflow: hidden; }
+  .timer i { position: absolute; inset: 0; background: #d9a441; transform-origin: left; }
+  .exp { position: absolute; left: 70px; right: 70px; top: 1120px; min-height: 200px; background: #28251d; color: #fff; border-radius: 26px; padding: 34px 44px; font-size: 46px; line-height: 1.45; font-weight: 700; }
+  .exp b { color: #ffd77a; }
+  .think { position: absolute; left: 0; right: 0; top: 1150px; text-align: center; font-size: 46px; color: #6f6858; font-weight: 700; letter-spacing: 4px; }
+  .sum { position: absolute; left: 70px; right: 70px; top: 310px; }
+  .row { display: flex; align-items: center; gap: 26px; background: #fffdf8; border-radius: 22px; padding: 18px 30px; margin-bottom: 16px; box-shadow: 0 10px 24px rgba(40,37,29,.1); font-size: 42px; font-weight: 700; }
+  .row .m { width: 84px; height: 84px; border-radius: 16px; flex: none; color: #fff; font-family: var(--brush); font-size: 64px; display: flex; align-items: center; justify-content: center; }
+  .ask { position: absolute; left: 70px; right: 70px; top: 1060px; text-align: center; font-family: var(--serif); font-weight: 900; font-size: 78px; color: #a63a3a; }
+  .ask small { display: block; font-family: var(--sans); font-size: 42px; color: #28251d; margin-top: 14px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, seg, stagger, prog } = E;
+C.filters();
+C.brandmark();
+E.subtitles({ cls: "light", ids: ["q0", "end"] });
+
+const QS = [
+  ["q1", "a1", false, "单招没录取，<br>就不能参加高考了", "没被录取，<b>6月照常高考</b>，不受影响。只有被录取的，才不再参加当年高考。"],
+  ["q2", "a2", false, "单招的毕业证，<br>和统招不一样", "一样。都是<b>普通高校全日制专科</b>毕业证书。"],
+  ["q3", "a3", false, "A类考生，<br>就是成绩好的考生", "A类指<b>有学考成绩的应届普高生</b>，跟成绩好坏无关。"],
+  ["q4", "a4", true, "单招录取后，<br>转专业只能在<br>当年单招专业范围内", "对。而且单招录取后<b>不得转学</b>，专业要一次选好。"],
+  ["q5", "a5", false, "去年最低分300，<br>今年考305就稳了", "历史最低分<b>只能参考</b>。先对齐类别和计分口径，再留足余量。"],
+];
+
+const topBar = el("div", "top", `<div class="t">家长自测 · <span>单招5问</span></div><div class="dots">${QS.map((_, i) => `<i>${i + 1}</i>`).join("")}</div>`);
+show(topBar, 0.2, "down", 0.5);
+const dots = topBar.querySelectorAll(".dots i");
+
+/* intro */
+const intro = el("div", "card", `<div class="no">开始之前</div><div class="qt">这5个说法，<br>你信过几个？</div><div class="qm">？</div>`);
+show(intro, 0.3, "pop", 0.6);
+sfx(0.3, "pop", 0.8);
+hide(intro, S("q1") - 0.4, "left", 0.35);
+
+QS.forEach(([qid, aid, truth, q, exp], i) => {
+  const tq = S(qid), ta = S(aid);
+  const nextT = i < 4 ? S(QS[i + 1][0]) - 0.4 : S("q6") - 0.4;
+  const card = el("div", "card", `<div class="no">第${i + 1}题</div><div class="qt">${q}</div><div class="qm">？</div>`);
+  if (i === 3) card.querySelector(".qt").style.fontSize = "64px";
+  show(card, tq - 0.3, "right", 0.45);
+  sfx(tq - 0.3, "whoosh", 0.5);
+  hide(card, nextT, "left", 0.35);
+  anim(dots[i], [{ borderColor: "#c9bda6", background: "transparent" }, { borderColor: "#28251d", background: "#28251d" }], tq - 0.2, 0.3, { fill: "forwards" });
+
+  const btns = el("div", "btns", `<div class="btn by"><div class="f" style="background:#0e7a5f"></div><span>✓ 对</span></div><div class="btn bn"><div class="f" style="background:#c0392b"></div><span>✗ 错</span></div>`);
+  show(btns, tq + 0.2, "up", 0.4);
+  hide(btns, nextT, "fade", 0.3);
+  const timer = el("div", "timer", "<i></i>");
+  const thinkStart = End(qid);
+  show(timer, thinkStart - 0.1, "fade", 0.2);
+  anim(timer.firstChild, [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], thinkStart, ta - thinkStart - 0.05, { ease: "linear" });
+  hide(timer, ta, "fade", 0.2);
+  const think = el("div", "think", "想一想……");
+  show(think, thinkStart, "fade", 0.2);
+  hide(think, ta - 0.05, "fade", 0.1);
+  for (let k = 0; k < 3; k++) sfx(thinkStart + k * ((ta - thinkStart) / 3), k % 2 ? "tock" : "tick", 1);
+
+  const right = btns.querySelector(truth ? ".by" : ".bn");
+  const wrong = btns.querySelector(truth ? ".bn" : ".by");
+  anim(right.querySelector(".f"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], ta - 0.05, 0.3, { ease: "out" });
+  anim(right, [{ color: "#28251d", borderColor: "#28251d" }, { color: "#fff", borderColor: truth ? "#0e7a5f" : "#c0392b" }], ta - 0.05, 0.2, { fill: "forwards" });
+  anim(wrong, [{ opacity: 1 }, { opacity: 0.3 }], ta, 0.3, { fill: "forwards" });
+  const seal = el("div", "qseal " + (truth ? "qyes" : "qno"), truth ? "对" : "错", card);
+  anim(seal, [{ opacity: 0, transform: "scale(2.4) rotate(-20deg)" }, { opacity: 1, transform: "scale(.95) rotate(-8deg)", offset: 0.6 }, { opacity: 1, transform: "scale(1) rotate(-8deg)" }], ta - 0.1, 0.35, { ease: "in" });
+  sfx(ta + 0.1, "stamp", 0.9);
+  sfx(ta + 0.12, truth ? "correct" : "wrong", 0.7);
+  anim(dots[i], [{ background: "#28251d", borderColor: "#28251d" }, { background: truth ? "#0e7a5f" : "#c0392b", borderColor: truth ? "#0e7a5f" : "#c0392b" }], ta, 0.3, { fill: "forwards" });
+  const ex = el("div", "exp", exp);
+  show(ex, ta + 0.25, "up", 0.4);
+  hide(ex, nextT, "fade", 0.3);
+});
+
+/* summary */
+const sum = el("div", "sum", QS.map(([, , truth, q]) => `<div class="row"><div class="m" style="background:${truth ? "#0e7a5f" : "#c0392b"}">${truth ? "对" : "错"}</div><div>${q.split("<br>").join("")}</div></div>`).join(""));
+sum.querySelectorAll(".row").forEach((r) => (r.style.fontSize = "38px"));
+stagger(sum.children, S("q6") - 0.2, 0.1, "left", 0.4);
+sfx(S("q6") - 0.2, "riser", 0.5);
+const ask = el("div", "ask", `你答对了几个？<small>💬 评论区告诉我</small>`);
+show(ask, S("q6") + 0.4, "pop", 0.5);
+sfx(S("q6") + 0.4, "ding", 0.6);
+
+C.endcard(S("end") - 0.3, { chips: ["先看懂单招", "查学校", "查专业"] });
+</script>
+</body>
+</html>

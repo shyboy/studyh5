@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: var(--paper) url(../lib/paper.jpg) center/cover; }
+  .scene { position: absolute; inset: 0; }
+  .redbg { position: absolute; inset: 0; background: linear-gradient(170deg, #8c2f2f, #a63a3a 60%, #b44a3c); }
+  .redbg::after { content: ""; position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: multiply; opacity: .4; }
+  .warn { position: absolute; left: 50%; top: 300px; transform: translateX(-50%); }
+  .warn div { border: 6px solid #ffe08a; color: #ffe08a; font-family: var(--serif); font-weight: 900; font-size: 56px; letter-spacing: 10px; padding: 8px 26px 8px 36px; border-radius: 10px; transform: rotate(-4deg); }
+  .hk { position: absolute; left: 0; right: 0; text-align: center; font-family: var(--serif); font-weight: 900; color: #fff; z-index: 2; text-shadow: 0 8px 0 rgba(0,0,0,.15); }
+  .stripes { position: absolute; left: -40px; right: -40px; height: 70px; background: repeating-linear-gradient(-45deg, #ffcf3f 0 40px, #28251d 40px 80px); z-index: 1; }
+  .cal { position: absolute; left: 70px; right: 70px; top: 280px; height: 970px; background: #fff; border-radius: 26px; box-shadow: 0 30px 60px rgba(40,37,29,.18); overflow: hidden; }
+  .cal .hd { height: 180px; background: #a63a3a; color: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; }
+  .cal .hd .m { font-family: var(--serif); font-weight: 900; font-size: 80px; }
+  .cal .hd .y { font-size: 40px; opacity: .85; text-align: right; line-height: 1.3; }
+  .cal .wk { display: grid; grid-template-columns: repeat(7, 1fr); padding: 26px 30px 0; font-size: 34px; color: #6f6858; text-align: center; font-weight: 700; }
+  .cal .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 12px; padding: 18px 30px; }
+  .day { height: 118px; border-radius: 18px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: var(--num); font-size: 58px; color: #28251d; position: relative; }
+  .day .f { position: absolute; inset: 0; border-radius: 18px; background: #0e5a50; transform: scale(0); }
+  .day span { position: relative; z-index: 1; }
+  .day small { position: relative; z-index: 1; font-family: var(--sans); font-size: 24px; font-weight: 700; margin-top: -4px; }
+  .day.we { color: #b8b0a0; }
+  .ring30 { position: absolute; inset: -10px; border: 7px solid #d23b2f; border-radius: 50%; z-index: 2; }
+  .lbl30 { position: absolute; top: -56px; left: 50%; transform: translateX(-50%); background: #d23b2f; color: #fff; font-family: var(--sans); font-weight: 900; font-size: 30px; padding: 4px 14px; border-radius: 10px; white-space: nowrap; z-index: 3; }
+  .stamp { position: absolute; left: 140px; top: 620px; width: 800px; white-space: nowrap; height: 250px; border: 12px solid #d23b2f; border-radius: 20px; color: #d23b2f; font-family: var(--serif); font-weight: 900; font-size: 112px; letter-spacing: 6px; display: flex; align-items: center; justify-content: center; filter: url(#roughen); z-index: 10; background: rgba(255,255,255,.35); }
+  .banner { position: absolute; left: 70px; right: 70px; top: 1275px; background: #28251d; color: #ffe08a; font-size: 40px; font-weight: 700; text-align: center; padding: 20px; border-radius: 16px; z-index: 11; }
+  .board { position: absolute; left: 70px; right: 70px; top: 290px; height: 1040px; background: #fffdf7; border-radius: 22px; box-shadow: 0 30px 60px rgba(40,37,29,.2); padding: 120px 50px 40px; }
+  .clip { position: absolute; left: 50%; top: -40px; width: 280px; height: 90px; margin-left: -140px; background: linear-gradient(#9aa0a6, #6b7177); border-radius: 18px; box-shadow: 0 6px 10px rgba(0,0,0,.25); }
+  .board .bt { font-family: var(--serif); font-weight: 900; font-size: 64px; margin-bottom: 30px; }
+  .item { display: flex; gap: 28px; align-items: flex-start; padding: 28px 0; border-bottom: 3px dashed #e5ddcb; }
+  .box { width: 76px; height: 76px; flex: none; border: 6px solid #28251d; border-radius: 14px; position: relative; margin-top: 4px; }
+  .box svg { position: absolute; left: -8px; top: -22px; width: 100px; height: 100px; overflow: visible; }
+  .box path { fill: none; stroke: #d23b2f; stroke-width: 14; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 200; }
+  .it { font-size: 46px; line-height: 1.4; font-weight: 700; }
+  .it small { display: block; font-size: 36px; color: #6f6858; font-weight: 400; }
+  .it b { color: #a63a3a; }
+  .phone { position: absolute; left: 190px; top: 250px; width: 700px; height: 1120px; border-radius: 80px; background: #1b1b1b; padding: 24px; box-shadow: 0 40px 80px rgba(0,0,0,.35); }
+  .screen { position: absolute; inset: 24px; border-radius: 58px; overflow: hidden; background: #fff; }
+  .urlbar { position: absolute; left: 0; right: 0; top: 0; height: 120px; background: #f2f2f2; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 16px; z-index: 2; }
+  .urlbar div { background: #e2e2e2; border-radius: 30px; padding: 8px 34px; font-size: 32px; font-weight: 700; }
+  .screen img { position: absolute; left: 0; top: 120px; width: 652px; }
+  .sticker { position: absolute; z-index: 5; background: #ffcf3f; color: #28251d; font-weight: 900; font-size: 46px; padding: 18px 34px; border-radius: 16px; box-shadow: 0 14px 30px rgba(0,0,0,.25); transform: rotate(-6deg); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, seg, stagger } = E;
+C.filters();
+const at = (id, i = 0) => S(id) + (seg[id].subs[i] ? seg[id].subs[i].t : 0);
+const bm = C.brandmark();
+E.subtitles({ cls: "light", highlight: ["只想走单招", "高考报名", "10月14日", "30日", "双休日不受理", "逾期不受理", "报名点", "9月30日前", "12月10日前", "单招汇", "高三家长"] });
+
+/* S1 hook */
+const s1 = el("div", "scene");
+el("div", "redbg", "", s1);
+const st1 = el("div", "stripes", "", s1); st1.style.top = "200px"; st1.style.transform = "rotate(-3deg)";
+const st2 = el("div", "stripes", "", s1); st2.style.top = "1230px"; st2.style.transform = "rotate(-3deg)";
+anim(st1, [{ backgroundPosition: "0 0" }, { backgroundPosition: "-226px 0" }], 0, 6, { ease: "linear" });
+anim(st2, [{ backgroundPosition: "0 0" }, { backgroundPosition: "226px 0" }], 0, 6, { ease: "linear" });
+const w = el("div", "warn", "<div>家长注意</div>", s1);
+show(w, 0.2, "pop", 0.4);
+sfx(0.2, "alarm", 0.9);
+const h1 = el("div", "hk", "孩子只走单招", s1); h1.style.cssText += "top:480px;font-size:120px;";
+const h2 = el("div", "hk", "也要先完成", s1); h2.style.cssText += "top:650px;font-size:96px;color:#ffe08a;";
+const h3 = el("div", "hk", "高考报名！", s1); h3.style.cssText += "top:790px;font-size:190px;";
+show(h1, at("r1", 1) - 0.1, "slam", 0.45);
+sfx(at("r1", 1) - 0.1, "hit", 0.8);
+show(h2, at("r1", 2) - 0.1, "up", 0.35);
+show(h3, at("r1", 2) + 0.5, "slam", 0.5);
+sfx(at("r1", 2) + 0.5, "impact", 0.9);
+hide(s1, S("r2") - 0.3, "grow", 0.35);
+anim(bm, [{ color: "#fff" }, { color: "#fff" }], 0, S("r2") - 0.3, { fill: "backwards", ease: "linear" });
+
+/* S2 calendar */
+const s2 = el("div", "scene");
+show(s2, S("r2") - 0.3, "fade", 0.3);
+const cal = el("div", "cal", `<div class="hd"><div class="m">10月</div><div class="y">2026年<br>高考报名</div></div><div class="wk"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div><div class="days"></div>`, s2);
+show(cal, S("r2") - 0.2, "up", 0.5);
+const days = cal.querySelector(".days");
+for (let i = 0; i < 4; i++) el("div", "day", "", days);
+const cells = {};
+for (let d = 1; d <= 31; d++) {
+  const dow = (4 + d - 1) % 7;
+  const c = el("div", "day" + (dow === 0 || dow === 6 ? " we" : ""), `<div class="f"></div><span>${d}</span>`, days);
+  cells[d] = { c, dow };
+}
+const tSweep = at("r2", 1);
+let k = 0;
+for (let d = 14; d <= 30; d++) {
+  const { c, dow } = cells[d];
+  if (dow === 0 || dow === 6) continue;
+  const t0 = tSweep + 0.3 + k * 0.13;
+  anim(c.querySelector(".f"), [{ transform: "scale(0)" }, { transform: "scale(1)" }], t0, 0.3, { ease: "back" });
+  anim(c.querySelector("span"), [{ color: "#28251d" }, { color: "#fff" }], t0, 0.2);
+  sfx(t0, "tick", 0.7);
+  k++;
+}
+const tWe = at("r2", 3);
+[17, 18, 24, 25].forEach((d, i) => {
+  const s = el("small", "", "不受理", cells[d].c);
+  s.style.color = "#d23b2f";
+  show(s, tWe + i * 0.12, "pop", 0.3);
+  anim(cells[d].c, [{ background: "transparent" }, { background: "#f1ece2" }], tWe + i * 0.12, 0.3);
+});
+sfx(tWe, "blip", 0.7);
+const r30 = el("div", "ring30", "", cells[30].c);
+const l30 = el("div", "lbl30", "截止", cells[30].c);
+anim(r30, [{ clipPath: "inset(0 100% 0 0)", transform: "rotate(-20deg)" }, { clipPath: "inset(0 0 0 0)", transform: "rotate(0)" }], at("r2", 2), 0.4);
+show(l30, at("r2", 2) + 0.2, "pop", 0.3);
+const r14 = el("div", "lbl30", "开始", cells[14].c); r14.style.background = "#0e5a50";
+show(r14, tSweep + 0.2, "pop", 0.3);
+sfx(at("r2", 2), "hit", 0.6);
+const stamp = el("div", "stamp", "逾期不受理", s2);
+anim(stamp, [{ opacity: 0, transform: "scale(2.2) rotate(-18deg)" }, { opacity: 1, transform: "scale(.95) rotate(-8deg)", offset: 0.6 }, { opacity: 1, transform: "scale(1) rotate(-8deg)" }], at("r3", 2) - 0.15, 0.4, { ease: "in" });
+sfx(at("r3", 2) + 0.1, "stamp", 1);
+const ban = el("div", "banner", "省考试院通知：报名对象包含高职单招考生", s2);
+show(ban, at("r3", 1) - 0.1, "up", 0.4);
+hide(s2, S("r4") - 0.3, "left", 0.4);
+
+/* S3 checklist */
+const s3 = el("div", "scene");
+show(s3, S("r4") - 0.2, "right", 0.45);
+const board = el("div", "board", `<div class="clip"></div><div class="bt">和孩子一起核对 ✍</div>`, s3);
+const items = [
+  ["r5", "问清<b>报名点</b>", "在哪报、要带哪些材料"],
+  ["r6", "<b>身份证</b>有效期", "2027年9月30日前不能过期"],
+  ["r7", "<b>毕业证 / 学籍</b>材料", "按报名点要求交验"],
+  ["r8", "<b>12月10日前</b>后续事项", "户口簿电子图片上传 · 登记表本人签字"],
+];
+items.forEach(([id, a, b], i) => {
+  const it = el("div", "item", `<div class="box"><svg viewBox="0 0 100 100"><path d="M 14 52 L 40 78 L 92 12"/></svg></div><div class="it">${a}<small>${b}</small></div>`, board);
+  show(it, i === 0 ? S("r4") + 0.3 + i * 0.15 : S("r4") + 0.3 + i * 0.15, "up", 0.4);
+  const tk = at(id, 1) - 0.2;
+  anim(it.querySelector("path"), [{ strokeDashoffset: 200 }, { strokeDashoffset: 0 }], tk, 0.35, { ease: "out" });
+  anim(it, [{ background: "rgba(255,207,63,0)" }, { background: "rgba(255,207,63,.22)" }], S(id), 0.3, { fill: "forwards" });
+  sfx(tk, "tap", 1);
+  sfx(tk + 0.05, "pop", 0.6);
+});
+hide(s3, S("r9") - 0.3, "up", 0.4);
+
+/* S4 phone */
+const s4 = el("div", "scene");
+show(s4, S("r9") - 0.25, "fade", 0.3);
+const ph = el("div", "phone", `<div class="screen"><div class="urlbar"><div>🔒 danzhaohui.com</div></div><img src="../assets/registration.jpg"></div>`, s4);
+show(ph, S("r9") - 0.2, [{ opacity: 0, transform: "translateY(400px) rotate(6deg)" }, { opacity: 1, transform: "none" }], 0.6);
+sfx(S("r9") - 0.2, "whoosh", 0.7);
+const img = ph.querySelector("img");
+anim(img, [{ transform: "translateY(0)" }, { transform: "translateY(-2350px)" }], S("r9") + 0.6, 4.2, { ease: "inOut" });
+const sk = el("div", "sticker", "可打印 · 逐项打勾 ✔", s4);
+sk.style.left = "560px"; sk.style.top = "1180px";
+show(sk, at("r9", 2), "pop", 0.4);
+sfx(at("r9", 2), "blip", 0.8);
+
+C.endcard(S("end") - 0.3, { chips: ["报名准备清单", "查学校", "查专业"] });
+</script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: radial-gradient(100% 60% at 50% 40%, #e4efec 0%, #cfe0da 60%, #b9d1c9 100%); }
+  .tex { position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: multiply; opacity: .35; }
+  .phone { position: absolute; left: 180px; top: 270px; width: 720px; height: 1100px; border-radius: 86px; background: #161616; box-shadow: 0 50px 90px rgba(14,60,50,.35), inset 0 0 0 4px #3a3a3a; }
+  .screen { position: absolute; left: 20px; top: 20px; right: 20px; bottom: 20px; border-radius: 66px; overflow: hidden; background: #fff; }
+  .urlbar { position: absolute; left: 0; right: 0; top: 0; height: 110px; background: #f1f1f1; z-index: 3; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 14px; border-bottom: 2px solid #e2e2e2; }
+  .urlbar div { background: #e1e1e1; border-radius: 30px; padding: 8px 40px; font-size: 32px; font-weight: 700; color: #222; }
+  .notch { position: absolute; left: 50%; top: 14px; width: 200px; height: 44px; margin-left: -100px; background: #161616; border-radius: 22px; z-index: 4; }
+  .view { position: absolute; left: 0; right: 0; top: 110px; bottom: 0; overflow: hidden; }
+  .view img { position: absolute; left: 0; top: 0; width: 680px; transform-origin: 0 0; }
+  .step { position: absolute; right: 60px; top: 100px; display: flex; align-items: center; gap: 16px; background: #0e5a50; color: #fff; border-radius: 40px; padding: 12px 30px 12px 14px; font-size: 40px; font-weight: 900; box-shadow: 0 10px 24px rgba(14,90,80,.3); }
+  .step i { font-style: normal; width: 58px; height: 58px; border-radius: 50%; background: #ffd77a; color: #0e5a50; display: flex; align-items: center; justify-content: center; font-family: var(--num); font-size: 44px; }
+  .finger { position: absolute; z-index: 60; width: 120px; height: 120px; }
+  .finger .ring { position: absolute; left: 10px; top: 10px; width: 100px; height: 100px; border-radius: 50%; background: rgba(166,58,58,.35); border: 5px solid rgba(255,255,255,.95); }
+  .finger .hand { position: absolute; left: 40px; top: 44px; font-size: 110px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.3)); font-family: "Noto Color Emoji"; }
+  .hlbox { position: absolute; z-index: 5; border: 6px solid #e0a43a; border-radius: 18px; box-shadow: 0 0 0 2000px rgba(0,0,0,.28); }
+  .tip { position: absolute; z-index: 30; background: #a63a3a; color: #fff; font-weight: 900; font-size: 44px; padding: 16px 30px; border-radius: 18px; box-shadow: 0 14px 30px rgba(166,58,58,.35); white-space: nowrap; }
+  .typed { position: absolute; z-index: 4; background: #fff; font-size: 30px; color: #222; display: flex; align-items: center; padding-left: 14px; }
+  .hook { position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 45; background: rgba(14,90,80,.94); display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff; }
+  .hook .a { font-family: var(--serif); font-weight: 900; font-size: 96px; line-height: 1.3; text-align: center; }
+  .hook .a b { color: #ffd77a; }
+  .hook .b { margin-top: 40px; font-size: 52px; font-weight: 700; background: #fff; color: #0e5a50; padding: 14px 40px; border-radius: 50px; }
+  .note { position: absolute; left: 90px; top: 520px; width: 900px; background: #fffbe8; border-radius: 26px; padding: 50px 60px; box-shadow: 0 30px 60px rgba(0,0,0,.25); z-index: 40; font-family: "LXGW WenKai"; transform: rotate(-2deg); }
+  .note h3 { margin: 0 0 24px; font-size: 64px; color: #a63a3a; font-weight: 500; }
+  .note p { margin: 0; font-size: 52px; line-height: 1.75; color: #1f2a44; }
+</style>
+</head>
+<body>
+<div id="stage"><div class="tex"></div></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, seg, prog, ease } = E;
+C.filters();
+C.brandmark();
+E.subtitles({ cls: "light", highlight: ["三步", "查专业", "护理", "筛选", "官方招生章程直达", "88所学校", "3到5所", "和孩子一起商量", "单招汇"] });
+const at = (id, i = 0) => S(id) + (seg[id].subs[i] ? seg[id].subs[i].t : 0);
+
+const PH = { x: 180, y: 270 };
+const SC = 680 / 1080;
+const phone = el("div", "phone", `<div class="screen"><div class="notch"></div><div class="urlbar"><div>🔒 danzhaohui.com</div></div><div class="view"></div></div>`);
+const view = phone.querySelector(".view");
+const toScreen = (x, y, scroll) => ({ x: PH.x + 20 + x * SC, y: PH.y + 20 + 110 + (y - scroll) * SC });
+
+function shot(src, t, scroll0 = 0) {
+  const im = el("img", "", null, view);
+  im.src = "../assets/" + src;
+  show(im, t, "fade", 0.2);
+  im.style.transform = `translateY(${-scroll0 * SC}px)`;
+  return im;
+}
+function scroll(im, from, to, t, dur, e = "inOut") {
+  anim(im, [{ transform: `translateY(${-from * SC}px)` }, { transform: `translateY(${-to * SC}px)` }], t, dur, { ease: e, fill: "forwards" });
+  sfx(t, "swish", 0.35);
+}
+function finger(x, y, tTap) {
+  const f = el("div", "finger", `<div class="ring"></div><div class="hand">👆</div>`);
+  f.style.left = x - 60 + "px";
+  f.style.top = y - 60 + "px";
+  show(f, tTap - 0.6, [{ opacity: 0, transform: "translate(140px,240px)" }, { opacity: 1, transform: "none" }], 0.5, "out");
+  anim(f.querySelector(".ring"), [{ transform: "scale(.2)", opacity: 1 }, { transform: "scale(1.6)", opacity: 0 }], tTap, 0.5, { ease: "out" });
+  anim(f.querySelector(".hand"), [{ transform: "scale(1)" }, { transform: "scale(.85)" }, { transform: "scale(1)" }], tTap - 0.05, 0.2, { ease: "linear" });
+  hide(f, tTap + 0.4, "fade", 0.25);
+  sfx(tTap, "tap", 1);
+}
+function hl(x, y, w, h, t0, t1) {
+  const b = el("div", "hlbox");
+  b.style.cssText += `left:${x}px;top:${y}px;width:${w}px;height:${h}px;`;
+  show(b, t0, "pop", 0.35);
+  hide(b, t1, "fade", 0.25);
+  return b;
+}
+function tip(text, x, y, t0, t1, color) {
+  const d = el("div", "tip", text);
+  d.style.left = x + "px"; d.style.top = y + "px";
+  if (color) d.style.background = color;
+  show(d, t0, "pop", 0.4);
+  hide(d, t1, "fade", 0.25);
+  sfx(t0, "blip", 0.7);
+}
+function step(n, text, t0, t1) {
+  const s = el("div", "step", `<i>${n}</i>${text}`);
+  show(s, t0, "right", 0.4);
+  hide(s, t1, "fade", 0.25);
+}
+function zoom(t0, dur, scale, ox, oy, hold) {
+  anim(phone, [{ transform: "none" }, { transform: `scale(${scale})`, offset: 0.2 }, { transform: `scale(${scale})`, offset: 0.85 }, { transform: "none" }], t0, dur, { ease: "inOut", fill: "none" });
+  phone.style.transformOrigin = `${ox}px ${oy}px`;
+}
+
+/* hook */
+const hk = el("div", "hook", `<div class="a">孩子想学<b>护理</b><br>哪些学校能报？</div><div class="b">手机上 3 步查到</div>`);
+anim(hk.querySelector(".a"), [{ opacity: 0, transform: "scale(1.3)" }, { opacity: 1, transform: "none" }], 0.3, 0.5);
+show(hk.querySelector(".b"), at("t1", 2), "pop", 0.4);
+sfx(0.3, "impact", 0.6);
+hide(hk, S("t2") - 0.35, [{ clipPath: "circle(150% at 50% 50%)" }, { clipPath: "circle(0% at 50% 50%)" }], 0.45);
+show(phone, S("t2") - 0.5, [{ opacity: 0, transform: "translateY(300px)" }, { opacity: 1, transform: "none" }], 0.5);
+
+/* step 1: home → 查专业 */
+step(1, "打开单招汇 · 点“查专业”", S("t2"), S("t3") - 0.2);
+const home = shot("home_top.jpg", S("t2") - 0.5);
+const nav = toScreen(424, 443, 0);
+const tNav = at("t2", 2) + 0.8;
+hl(nav.x - 70, nav.y - 42, 140, 84, tNav - 0.9, tNav);
+finger(nav.x, nav.y, tNav);
+
+/* step 2: search 护理 */
+step(2, "输入专业 · 一键列出", S("t3"), S("t5") - 0.2);
+const majTop = shot("majors_top.jpg", tNav + 0.2);
+const inp = toScreen(130, 1225, 0);
+const typed = el("div", "typed", "", view);
+typed.style.cssText += `left:${140 * SC}px;top:${1160 * SC}px;width:${740 * SC}px;height:${96 * SC}px;`;
+show(typed, tNav + 0.2, "fade", 0.1);
+E.typewriter(typed, "护理", at("t3", 2), 4);
+sfx(at("t3", 2), "type", 0.8);
+const majS = shot("majors_search.jpg", at("t3", 2) + 0.7);
+hide(typed, at("t3", 2) + 0.75, "fade", 0.1);
+scroll(majS, 0, 2550, at("t3", 3), 1.4);
+tip("筛出26条护理相关记录", 260, 640, at("t3", 3) + 1.4, S("t4") - 0.1);
+zoom(at("t3", 3) + 1.3, 3.2, 1.18, 360, 520);
+// filters
+scroll(majS, 2550, 1050, S("t4") - 0.1, 1.0);
+const fTop = toScreen(0, 1450, 1050).y, fBot = toScreen(0, 2400, 1050).y;
+hl(PH.x + 40, fTop, 640, fBot - fTop, S("t4") + 1.0, End("t4") + 0.2);
+tip("城市 · 性质 · 学费 都能筛", 340, fBot + 20, S("t4") + 1.2, End("t4") + 0.2, "#0e5a50");
+
+/* step 3: school page */
+step(3, "点进学校 · 看详情", S("t5"), S("t6") - 0.2);
+const sch = shot("school_a.jpg", S("t5") - 0.1);
+scroll(sch, 0, 4100, at("t5", 2), 1.5);
+tip("专业目录 · 学费 · 招生对象", 280, 560, at("t5", 2) + 1.3, at("t5", 3) - 0.1, "#0e5a50");
+scroll(sch, 4100, 3020, at("t5", 3) - 0.1, 0.9);
+const dTop = toScreen(0, 3140, 3020).y;
+hl(PH.x + 50, dTop, 620, 540 * SC + 330, at("t5", 3) + 0.8, End("t5") + 0.3);
+tip("官方招生章程 · 一键直达", 300, dTop - 100, at("t5", 3) + 0.9, End("t5") + 0.3);
+
+/* bonus: schools */
+step("+", "按学校找 · 88所", S("t6"), S("t7") - 0.2);
+const hs = shot("hunan_search.jpg", S("t6") - 0.1, 830);
+const hTop = toScreen(0, 1400, 830).y, hBot = toScreen(0, 2330, 830).y;
+hl(PH.x + 40, hTop, 640, hBot - hTop, at("t6", 2), End("t6") + 0.3);
+tip("城市 · 性质 · 特色 · 分数线", 290, hTop - 110, at("t6", 2) + 0.2, End("t6") + 0.3, "#0e5a50");
+
+/* advice note */
+const note = el("div", "note", `<h3>✍ 家长小建议</h3><p>① 记下 3—5 所意向学校<br>② 对照官网章程逐项核对<br>③ 和孩子一起商量再定</p>`);
+anim(note, [{ opacity: 0, transform: "translateY(200px) rotate(6deg)" }, { opacity: 1, transform: "rotate(-2deg)" }], S("t7") - 0.2, 0.6, { ease: "out" });
+sfx(S("t7") - 0.2, "page", 0.8);
+const ps = note.querySelectorAll("p");
+
+C.endcard(S("end") - 0.3, { chips: ["查专业", "查学校", "看分数线"] });
+</script>
+</body>
+</html>

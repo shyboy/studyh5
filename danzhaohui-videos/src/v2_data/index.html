@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: radial-gradient(120% 70% at 50% 35%, #173a33 0%, #0c1714 60%, #070d0b 100%); color: #f3ecdf; }
+  .grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(243,236,223,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(243,236,223,.05) 2px, transparent 2px); background-size: 90px 90px; }
+  .grain { position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: overlay; opacity: .25; }
+  .src { position: absolute; right: 50px; top: 118px; font-size: 24px; color: rgba(243,236,223,.55); text-align: right; line-height: 1.5; z-index: 40; }
+  .scene { position: absolute; left: 0; right: 0; top: 0; height: 1380px; }
+  .sec { position: absolute; left: 70px; top: 250px; display: flex; align-items: baseline; gap: 22px; }
+  .sec .no { font-family: var(--num); font-size: 110px; color: var(--gold); line-height: .8; }
+  .sec .tt { font-family: var(--serif); font-weight: 900; font-size: 64px; letter-spacing: 3px; }
+  .gold { color: #e3b65b; }
+  /* scene A */
+  .big88 { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-family: var(--num); font-size: 640px; line-height: 1; color: #e3b65b; text-shadow: 0 0 80px rgba(227,182,91,.35); }
+  .big88lab { position: absolute; left: 0; right: 0; top: 960px; text-align: center; font-family: var(--serif); font-weight: 900; font-size: 76px; letter-spacing: 8px; }
+  .big88sub { position: absolute; left: 0; right: 0; top: 1080px; text-align: center; font-size: 36px; color: rgba(243,236,223,.6); letter-spacing: 6px; }
+  .ring { position: absolute; left: 540px; top: 650px; width: 10px; height: 10px; border-radius: 50%; border: 3px solid rgba(227,182,91,.6); }
+  /* scene B */
+  .stat { position: absolute; left: 90px; right: 90px; height: 270px; border-bottom: 2px solid rgba(243,236,223,.18); display: flex; align-items: flex-end; gap: 26px; padding-bottom: 34px; }
+  .stat .n { font-family: var(--num); font-size: 230px; line-height: .8; color: #e3b65b; min-width: 380px; }
+  .stat .l { font-size: 50px; font-weight: 700; line-height: 1.3; padding-bottom: 6px; }
+  .stat .l small { display: block; font-size: 30px; font-weight: 400; color: rgba(243,236,223,.6); }
+  .stat .bar { position: absolute; left: 0; bottom: -2px; height: 6px; background: #e3b65b; }
+  /* bubbles */
+  .bub { position: absolute; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #0c1714; font-weight: 900; text-align: center; line-height: 1.1; }
+  .bub .cn { font-family: var(--serif); }
+  .bub .ct { font-family: var(--num); }
+  .badge { position: absolute; background: #d0574b; color: #fff; font-weight: 900; font-size: 52px; padding: 16px 34px; border-radius: 60px; box-shadow: 0 16px 40px rgba(208,87,75,.45); white-space: nowrap; }
+  /* waffle */
+  .waffle { position: absolute; left: 115px; top: 430px; display: grid; grid-template-columns: repeat(11, 70px); gap: 12px; }
+  .cell { width: 70px; height: 70px; border-radius: 14px; background: rgba(243,236,223,.08); position: relative; overflow: hidden; }
+  .cell i { position: absolute; inset: 0; border-radius: 14px; }
+  .legend { position: absolute; left: 115px; top: 1150px; display: flex; gap: 46px; font-size: 44px; font-weight: 700; }
+  .legend span { display: flex; align-items: center; gap: 14px; }
+  .legend b { font-family: var(--num); font-size: 96px; font-weight: 400; }
+  .dot { width: 34px; height: 34px; border-radius: 9px; display: inline-block; }
+  .fee { position: absolute; left: 90px; right: 90px; }
+  .fee .lab { font-size: 46px; font-weight: 900; margin-bottom: 16px; }
+  .fee .axis { position: relative; height: 90px; background: rgba(243,236,223,.08); border-radius: 45px; }
+  .fee .rng { position: absolute; top: 0; bottom: 0; border-radius: 45px; display: flex; align-items: center; justify-content: center; font-family: var(--num); font-size: 58px; color: #0c1714; white-space: nowrap; }
+  .fee .rv { position: absolute; top: 8px; font-family: var(--num); font-size: 64px; white-space: nowrap; }
+  .ticks { position: absolute; left: 90px; right: 90px; display: flex; justify-content: space-between; font-family: var(--num); font-size: 40px; color: rgba(243,236,223,.5); }
+  /* bars */
+  .brow { position: absolute; left: 70px; right: 70px; height: 84px; display: flex; align-items: center; }
+  .brow .rk { width: 70px; font-family: var(--num); font-size: 62px; color: rgba(243,236,223,.5); }
+  .brow .nm { width: 380px; font-size: 38px; font-weight: 700; white-space: nowrap; }
+  .brow .track { flex: 1; height: 56px; position: relative; }
+  .brow .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 28px 28px 0; background: linear-gradient(90deg, #2aa58f, #5fd0b8); transform-origin: left; }
+  .brow .val { position: absolute; top: 4px; white-space: nowrap; font-family: var(--num); font-size: 50px; color: #f3ecdf; }
+  .brow.new .fill { background: linear-gradient(90deg, #b8463b, #e27466); }
+  .brow .tag { position: absolute; right: -6px; top: -28px; background: #e3b65b; color: #0c1714; font-size: 26px; font-weight: 900; padding: 3px 12px; border-radius: 8px; }
+  .neq { position: absolute; left: 0; right: 0; top: 330px; text-align: center; font-family: var(--serif); font-weight: 900; font-size: 128px; line-height: 1.25; }
+  .neq .x { display: block; font-family: var(--sans); font-weight: 900; color: #e2574b; font-size: 200px; line-height: 1.1; }
+  .steps3 { position: absolute; left: 0; right: 0; top: 1060px; display: flex; justify-content: center; gap: 26px; }
+  .steps3 div { padding: 20px 34px; border: 3px solid rgba(227,182,91,.7); border-radius: 50px; font-size: 42px; font-weight: 700; color: #e3b65b; }
+  /* dumbbell */
+  .db { position: absolute; left: 80px; right: 80px; height: 140px; }
+  .db .sn { font-size: 36px; font-weight: 700; margin-bottom: 16px; }
+  .db .ln { position: absolute; top: 84px; height: 10px; background: linear-gradient(90deg, #2aa58f, #e3b65b); border-radius: 5px; transform-origin: left; }
+  .db .p { position: absolute; top: 70px; width: 38px; height: 38px; border-radius: 50%; margin-left: -19px; border: 5px solid #0c1714; }
+  .db .pv { position: absolute; top: 118px; font-family: var(--num); font-size: 40px; margin-left: -40px; width: 80px; text-align: center; }
+  .note2 { position: absolute; left: 80px; right: 80px; top: 1250px; font-size: 28px; color: rgba(243,236,223,.5); }
+</style>
+</head>
+<body>
+<div id="stage"><div class="grid"></div><div class="grain"></div></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, prog, ease, counter, stagger } = E;
+C.filters();
+C.brandmark(null, { light: true });
+el("div", "src", "数据：88所学校2026年官方资料整理<br>仅供备考参考");
+E.subtitles({ highlight: ["88所", "2126", "178", "37所", "50所", "1所", "67所", "21所", "42所", "36所", "35所", "不等于好就业", "孩子兴趣", "18所", "784条", "好几百分", "类别和专业", "单招汇"] });
+
+function scene(id, endId) {
+  const s = el("div", "scene");
+  show(s, S(id) - 0.15, "fade", 0.35);
+  if (endId) hide(s, S(endId) - 0.35, "grow", 0.35);
+  return s;
+}
+function section(parent, no, tt, t) {
+  const h = el("div", "sec", `<span class="no">${no}</span><span class="tt">${tt}</span>`, parent);
+  show(h, t, "left", 0.5);
+  sfx(t, "whoosh", 0.5);
+}
+
+/* A: 88 */
+const A = scene("d1", "d2");
+for (let i = 0; i < 3; i++) {
+  const r = el("div", "ring", "", A);
+  anim(r, [{ transform: "scale(1)", opacity: 0.9 }, { transform: "scale(110)", opacity: 0 }], 0.3 + i * 0.5, 2.2, { ease: "out" });
+}
+const n88 = el("div", "big88", "0", A);
+counter(n88, 0, 88, 0.2, 1.6);
+show(n88, 0.15, "slam", 0.5);
+sfx(0.2, "impact", 0.8);
+const lab = el("div", "big88lab", "所湖南单招院校", A);
+show(lab, 0.9, "up", 0.5);
+const sub = el("div", "big88sub", "一 所 一 所 数 出 来", A);
+show(sub, 1.4, "fade", 0.6);
+
+/* B: stats */
+const B = scene("d2", "d3");
+const stats = [[88, "所学校", "已收录院校档案"], [2126, "条院校专业记录", "同名专业按学校分别计数"], [178, "个资料来源链接", "优先主管部门与学校官方"]];
+const words = E.seg.d2.subs;
+stats.forEach((st, i) => {
+  const row = el("div", "stat", `<div class="n">0</div><div class="l">${st[1]}<small>${st[2]}</small></div><div class="bar"></div>`, B);
+  row.style.top = 300 + i * 320 + "px";
+  const t0 = S("d2") + (words[i] ? words[i].t : i * 1.5) - 0.1;
+  show(row, t0, "up", 0.5);
+  counter(row.querySelector(".n"), 0, st[0], t0, 1.1);
+  anim(row.querySelector(".bar"), [{ width: "0px" }, { width: "900px" }], t0, 1.0, { ease: "out" });
+  sfx(t0, "blip", 0.8);
+});
+
+/* C: cities bubbles */
+const Cc = scene("d3", "d6");
+section(Cc, "01", "城市分布", S("d3"));
+const cities = [["长沙", 37], ["衡阳", 7], ["湘潭", 7], ["株洲", 6], ["岳阳", 5], ["常德", 4], ["郴州", 4], ["邵阳", 4], ["益阳", 4], ["娄底", 3], ["永州", 3], ["怀化", 2], ["湘西", 1], ["张家界", 1]];
+const placed = [];
+const CX = 540, CY = 790, K = 40;
+cities.forEach(([name, n], i) => {
+  const r = Math.sqrt(n) * K + (n < 3 ? 18 : 0);
+  let x = CX, y = CY;
+  if (i > 0) {
+    let best = null;
+    for (let a = 0; a < 720 && !best; a += 1) {
+      for (let d = 0; d < 520; d += 6) {
+        const ang = (a * 0.5 + i * 37) * Math.PI / 180;
+        const px = CX + Math.cos(ang) * d * 1.0, py = CY + Math.sin(ang) * d * 1.15;
+        if (px - r < 40 || px + r > 1040 || py - r < 380 || py + r > 1330) continue;
+        if (placed.every((p) => Math.hypot(p.x - px, p.y - py) > p.r + r + 10)) { best = { x: px, y: py }; break; }
+      }
+    }
+    if (best) { x = best.x; y = best.y; }
+  }
+  placed.push({ x, y, r, name, n });
+});
+const bubs = {};
+placed.forEach((p, i) => {
+  const big = p.n >= 4;
+  const b = el("div", "bub", `<div class="cn" style="font-size:${big ? Math.max(34, p.r * 0.36) : 26}px">${p.name}</div><div class="ct" style="font-size:${big ? p.r * 0.5 : 34}px">${p.n}</div>`, Cc);
+  b.style.cssText += `left:${p.x - p.r}px;top:${p.y - p.r}px;width:${p.r * 2}px;height:${p.r * 2}px;background:${i === 0 ? "#e3b65b" : "#2aa58f"};`;
+  const t0 = i === 0 ? S("d3") + 1.6 : S("d3") + 2.2 + i * 0.07;
+  show(b, t0, "pop", 0.5);
+  if (i < 6) sfx(t0, "pop", 0.5);
+  bubs[p.name] = b;
+});
+// d4: highlight Chang-Zhu-Tan
+const t4 = S("d4");
+placed.forEach((p) => {
+  if (!["长沙", "湘潭", "株洲"].includes(p.name)) anim(bubs[p.name], [{ opacity: 1 }, { opacity: 0.25 }], t4 + 0.2, 0.4, { fill: "forwards" });
+  else anim(bubs[p.name], [{ boxShadow: "0 0 0 0 rgba(227,182,91,0)" }, { boxShadow: "0 0 0 12px rgba(227,182,91,.6)" }], t4 + 0.2, 0.4, { fill: "forwards" });
+});
+anim(bubs["湘潭"], [{ background: "#2aa58f" }, { background: "#e3b65b" }], t4 + 0.2, 0.3, { fill: "forwards" });
+anim(bubs["株洲"], [{ background: "#2aa58f" }, { background: "#e3b65b" }], t4 + 0.2, 0.3, { fill: "forwards" });
+const b50 = el("div", "badge", "长株潭 = 50所", Cc);
+b50.style.left = "300px"; b50.style.top = "395px";
+const t50 = S("d4") + (E.seg.d4.subs[2] ? E.seg.d4.subs[2].t : 3);
+show(b50, t50, "pop", 0.5);
+sfx(t50, "impact", 0.5);
+hide(b50, S("d5") - 0.1, "fade", 0.3);
+// d5: tiny ones
+const t5 = S("d5");
+["长沙", "湘潭", "株洲"].forEach((n) => anim(bubs[n], [{ opacity: 1 }, { opacity: 0.25 }], t5, 0.4, { fill: "forwards" }));
+["张家界", "湘西"].forEach((n) => {
+  anim(bubs[n], [{ opacity: 0.25, background: "#2aa58f" }, { opacity: 1, background: "#d0574b" }], t5, 0.3, { fill: "forwards" });
+  anim(bubs[n], [{ transform: "scale(1)" }, { transform: "scale(1.5)" }, { transform: "scale(1.25)" }], t5 + 0.1, 0.6, { fill: "forwards", ease: "out" });
+});
+sfx(t5 + 0.1, "blip", 0.8);
+
+/* D: waffle + fees */
+const D = scene("d6", "d8");
+section(D, "02", "办学性质", S("d6"));
+const wf = el("div", "waffle", "", D);
+const cells = [];
+for (let i = 0; i < 88; i++) cells.push(el("div", "cell", "<i></i>", wf));
+const tw = S("d6") + 1.0;
+cells.forEach((c, i) => {
+  const color = i < 67 ? "#2aa58f" : i < 87 ? "#d0574b" : "#e3b65b";
+  c.firstChild.style.background = color;
+  const t0 = tw + (i < 67 ? i * 0.018 : 1.3 + (i - 67) * 0.03);
+  anim(c.firstChild, [{ transform: "scale(0)" }, { transform: "scale(1)" }], t0, 0.3, { ease: "back" });
+});
+sfx(tw, "riser", 0.4);
+const lg = el("div", "legend", `<span><i class="dot" style="background:#2aa58f"></i>公办 <b class="gold" id="lg1">0</b></span><span><i class="dot" style="background:#d0574b"></i>民办 <b id="lg2" style="color:#e27466">0</b></span>`, D);
+show(lg, tw + 0.2, "up", 0.5);
+counter(lg.querySelector("#lg1"), 0, 67, tw, 1.2);
+counter(lg.querySelector("#lg2"), 0, 21, tw + 1.3, 0.7);
+const legNote = el("div", "abs", "民办含1所民办非营利", D);
+legNote.style.cssText += "left:115px;top:1280px;font-size:28px;color:rgba(243,236,223,.5)";
+show(legNote, tw + 1.6, "fade", 0.4);
+// fees
+const t7 = S("d7");
+anim(wf, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-80px) scale(.9)" }], t7 - 0.1, 0.4, { fill: "forwards" });
+anim(lg, [{ opacity: 1 }, { opacity: 0 }], t7 - 0.1, 0.3, { fill: "forwards" });
+anim(legNote, [{ opacity: 1 }, { opacity: 0 }], t7 - 0.1, 0.3, { fill: "forwards" });
+const feeTitle = el("div", "abs serif", "学费参考（元/年）", D);
+feeTitle.style.cssText += "left:90px;top:440px;font-size:56px;";
+show(feeTitle, t7 + 0.1, "up", 0.4);
+const W = 900, MAX = 20000;
+[["公办", 4000, 8000, "#2aa58f", 0.3, "4000—8000"], ["民办", 10000, 20000, "#e27466", 1.6, "1万—2万"]].forEach(([nm, lo, hi, col, dt, txt], i) => {
+  const f = el("div", "fee", `<div class="lab">${nm}</div><div class="axis"><div class="rng" style="left:${lo / MAX * W}px;width:${(hi - lo) / MAX * W}px;background:${col}"></div><div class="rv" style="left:${hi >= MAX ? lo / MAX * W + 40 : hi / MAX * W + 24}px;color:${hi >= MAX ? "#0c1714" : col}">${txt}</div></div>`, D);
+  f.style.top = 600 + i * 230 + "px";
+  show(f, t7 + dt, "up", 0.4);
+  anim(f.querySelector(".rng"), [{ clipPath: "inset(0 100% 0 0 round 45px)" }, { clipPath: "inset(0 0 0 0 round 45px)" }], t7 + dt + 0.2, 0.7, { ease: "out" });
+  sfx(t7 + dt + 0.2, "swish", 0.6);
+});
+const tk = el("div", "ticks", "<span>0</span><span>5000</span><span>10000</span><span>15000</span><span>20000</span>", D);
+tk.style.top = "1080px";
+show(tk, t7 + 0.4, "fade", 0.4);
+const feeNote = el("div", "abs", "来源：站内院校资料整理，具体以各校当年章程为准", D);
+feeNote.style.cssText += "left:90px;top:1160px;font-size:28px;color:rgba(243,236,223,.5)";
+show(feeNote, t7 + 0.8, "fade", 0.4);
+
+/* E: TOP10 majors */
+const Ee = scene("d8", "d11");
+section(Ee, "03", "开设学校最多的专业 TOP10", S("d8"));
+const majors = [["大数据与会计", 42], ["软件技术", 36], ["人工智能技术应用", 35], ["电子商务", 33], ["机电一体化技术", 31], ["工业机器人技术", 31], ["大数据技术", 26], ["无人机应用技术", 26], ["新能源汽车技术", 25], ["婴幼儿托育服务与管理", 24]];
+const tb = S("d8") + 0.6;
+majors.forEach(([nm, n], i) => {
+  const isNew = i >= 7;
+  const row = el("div", "brow", `<div class="rk">${i + 1}</div><div class="nm" style="${nm.length > 8 ? "font-size:30px" : ""}">${nm}</div><div class="track"><div class="fill"></div><div class="val">0</div></div>`, Ee);
+  row.style.top = 400 + i * 92 + "px";
+  const fill = row.querySelector(".fill"), val = row.querySelector(".val");
+  const w = n / 42 * 330;
+  fill.style.width = w + "px";
+  val.style.left = w + 16 + "px";
+  const t0 = tb + i * 0.12;
+  show(row, t0, "left", 0.4);
+  anim(fill, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], t0 + 0.1, 0.9, { ease: "out" });
+  counter(val, 0, n, t0 + 0.1, 0.9, (v) => Math.round(v) + "所");
+  if (i < 3) {
+    const tt = S("d9") + (E.seg.d9.subs[i] ? E.seg.d9.subs[i].t : i * 1.6);
+    anim(row, [{ transform: "scale(1)" }, { transform: "scale(1.06)" }, { transform: "scale(1)" }], tt, 0.5, { fill: "forwards", composite: "add", ease: "out" });
+    anim(row.querySelector(".nm"), [{ color: "#f3ecdf" }, { color: "#e3b65b" }], tt, 0.2, { fill: "forwards" });
+    sfx(tt, "blip", 0.7);
+  }
+  if (isNew) {
+    const t10 = S("d10") + (i - 7) * 0.45;
+    anim(fill, [{ background: "linear-gradient(90deg, #2aa58f, #5fd0b8)" }, { background: "linear-gradient(90deg, #b8463b, #e27466)" }], t10, 0.3, { fill: "forwards" });
+    const tag = el("div", "tag", "新面孔", row.querySelector(".track"));
+    tag.style.left = w - 60 + "px"; tag.style.right = "auto";
+    show(tag, t10, "pop", 0.4);
+    sfx(t10, "coin", 0.8);
+  }
+});
+sfx(tb, "riser", 0.4);
+const mNote = el("div", "abs", "口径：88所学校2026年单招专业目录，同校同名专业只计1次", Ee);
+mNote.style.cssText += "left:70px;top:1330px;font-size:26px;color:rgba(243,236,223,.5)";
+show(mNote, tb + 1, "fade", 0.4);
+
+/* F: != */
+const F = scene("d11", "d12");
+const neq = el("div", "neq", `开得多<span class="x">≠</span>好就业`, F);
+show(neq, S("d11") + 0.1, "blur", 0.6);
+anim(neq.querySelector(".x"), [{ transform: "scale(3) rotate(-30deg)", opacity: 0 }, { transform: "scale(1) rotate(0)", opacity: 1 }], S("d11") + 0.9, 0.4, { ease: "back" });
+sfx(S("d11") + 0.9, "hit", 0.9);
+const st3 = el("div", "steps3", "<div>① 看兴趣</div><div>② 看专业实力</div><div>③ 看城市</div>", F);
+const t11 = S("d11") + (E.seg.d11.subs[3] ? E.seg.d11.subs[3].t : 3.5);
+stagger(st3.children, t11, 0.2, "pop", 0.4);
+sfx(t11, "pop", 0.6);
+
+/* G: dumbbell scores */
+const G = scene("d12", "end");
+section(G, "04", "18所学校 · 784条分数线", S("d12"));
+const schools = [["湖南商务职业技术学院", 188, 500.5], ["湖南生物机电职业技术学院", 148, 506], ["长沙民政职业技术学院", 104, 506], ["湖南水利水电职业技术学院", 133, 477], ["湖南食品药品职业学院", 348, 576]];
+const X0 = 0, XW = 920, lo = 100, hi = 600;
+const xp = (v) => (v - lo) / (hi - lo) * XW;
+const tg = S("d12") + 1.4;
+schools.forEach(([nm, a, b], i) => {
+  const r = el("div", "db", `<div class="sn">${nm}</div><div class="ln" style="left:${xp(a)}px;width:${xp(b) - xp(a)}px"></div><div class="p" style="left:${xp(a)}px;background:#2aa58f"></div><div class="p p2" style="left:${xp(b)}px;background:#e3b65b"></div><div class="pv" style="left:${xp(a)}px;color:#5fd0b8">${a}</div><div class="pv" style="left:${xp(b)}px;color:#e3b65b">${b}</div>`, G);
+  r.style.top = 400 + i * 165 + "px";
+  const t0 = tg + i * 0.35;
+  show(r, t0, "up", 0.4);
+  anim(r.querySelector(".ln"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], t0 + 0.2, 0.7, { ease: "out" });
+  anim(r.querySelector(".p2"), [{ transform: `translateX(${-(xp(b) - xp(a))}px)` }, { transform: "none" }], t0 + 0.2, 0.7, { ease: "out" });
+  sfx(t0 + 0.2, "swish", 0.4);
+});
+const lgd = el("div", "abs", `<span style="color:#5fd0b8">● 最低分专业</span>　<span style="color:#e3b65b">● 最高分专业</span>`, G);
+lgd.style.cssText += "left:80px;top:1240px;font-size:32px;font-weight:700";
+show(lgd, tg, "fade", 0.4);
+const n2 = el("div", "note2", "2026年历史分数线，含不同专业与考生类别，仅供参考，不能保证新年度录取", G);
+n2.style.top = "1295px"; n2.style.fontSize = "26px";
+show(n2, tg + 0.5, "fade", 0.4);
+const t13 = S("d13");
+const badge13 = el("div", "badge", "按自己的类别 + 专业看", G);
+badge13.style.left = "250px"; badge13.style.top = "1110px"; badge13.style.background = "#e3b65b"; badge13.style.color = "#0c1714";
+show(badge13, t13 + 0.3, "pop", 0.4);
+sfx(t13 + 0.3, "impact", 0.4);
+
+C.endcard(S("end") - 0.3);
+</script>
+</body>
+</html>

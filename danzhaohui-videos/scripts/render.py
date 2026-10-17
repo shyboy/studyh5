@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FONTS = [
     '900 40px "Noto Serif CJK SC"', '900 40px "Noto Sans CJK SC"', '700 40px "Noto Sans CJK SC"',
     '500 40px "Noto Sans CJK SC"', '400 40px "Noto Sans CJK SC"', '40px "Ma Shan Zheng"', '40px "ZCOOL KuaiLe"',
-    '40px "ZCOOL QingKe HuangYou"', '40px "Bebas Neue"', '40px "Oswald"', '40px "Noto Color Emoji"',
+    '40px "ZCOOL QingKe HuangYou"', '40px "Bebas Neue"', '40px "Oswald"', '40px "Noto Color Emoji"', '40px "LXGW WenKai"', '500 40px "LXGW WenKai"',
 ]
 
 

@@ -149,6 +149,11 @@ def make_sfx():
     S["blip"] = bl * 0.5
     S["count"] = (sine(1760, 0.12) * env(int(SR * 0.12), 0.001, d=0.05)) * 0.5
     S["go"] = (sine(1760, 0.5) + 0.5 * sine(2640, 0.5)) * env(int(SR * 0.5), 0.001, d=0.18) * 0.45
+    sc = noise(1.0, 21)
+    am = 0.5 + 0.5 * np.abs(np.sin(2 * np.pi * 7 * t_axis(1.0) + 2 * np.sin(2 * np.pi * 1.3 * t_axis(1.0))))
+    S["scribble"] = hp_fast(lp_fast(sc, 5000), 1800) * am * env(len(sc), 0.03, r=0.25) * 0.35
+    pg = noise(0.5, 22)
+    S["page"] = hp_fast(lp_fast(pg, 6000), 500) * np.sin(np.linspace(0, np.pi, len(pg))) ** 3 * 0.8
     cam = noise(0.18, 12)
     S["shutter"] = hp_fast(cam, 2000) * env(len(cam), 0.0005, d=0.02) * 0.8
     return S
@@ -331,7 +336,7 @@ def music(style, dur):
 
 
 def load_audio(path):
-    raw = subprocess.check_output(["ffmpeg", "-v", "error", "-i", str(path), "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"])
+    raw = subprocess.check_output(["ffmpeg", "-nostdin", "-v", "error", "-i", str(path), "-f", "f32le", "-ac", "1", "-ar", str(SR), "-"])
     return np.frombuffer(raw, dtype=np.float32).astype(np.float64)
 
 
@@ -390,7 +395,7 @@ def main(vid):
     out = ROOT / "out"
     out.mkdir(exist_ok=True)
     final = out / f"{cfg.get('filename', vid)}.mp4"
-    subprocess.check_call(["ffmpeg", "-y", "-v", "error", "-i", str(bdir / "silent.mp4"), "-i", str(wav),
+    subprocess.check_call(["ffmpeg", "-nostdin", "-y", "-v", "error", "-i", str(bdir / "silent.mp4"), "-i", str(wav),
                            "-c:v", "copy", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-ar", "44100",
                            "-c:a", "aac", "-b:a", "192k", "-ac", "2", "-shortest", "-movflags", "+faststart", str(final)])
     print("wrote", final)

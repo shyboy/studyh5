@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <link rel="stylesheet" href="../lib/base.css">
 <style>
+  html, body { background: #a63a3a; }
   #stage { background: #ececec; }
   .band { position: absolute; left: 0; right: 0; top: 0; height: 420px; background: linear-gradient(160deg, #8c2f2f, #a63a3a 55%, #b8513f); overflow: hidden; z-index: 20; }
   .band::after { content: ""; position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: multiply; opacity: .35; }
@@ -51,6 +52,11 @@
   .finger { position: absolute; z-index: 60; width: 120px; height: 120px; pointer-events: none; }
   .finger .ring { position: absolute; left: 10px; top: 10px; width: 100px; height: 100px; border-radius: 50%; background: rgba(166,58,58,.35); border: 5px solid rgba(255,255,255,.95); }
   .finger .hand { position: absolute; left: 40px; top: 44px; font-size: 110px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.3)); font-family: "Noto Color Emoji"; }
+  .noti { position: absolute; left: 40px; right: 40px; top: 580px; z-index: 35; background: rgba(255,255,255,.97); border-radius: 30px; padding: 26px 34px; box-shadow: 0 24px 50px rgba(0,0,0,.25); }
+  .noti .nh { display: flex; align-items: center; gap: 14px; font-size: 32px; color: #666; font-weight: 700; }
+  .noti .ni { font-family: "Noto Color Emoji"; font-size: 40px; }
+  .noti .nt { margin-left: auto; font-weight: 400; }
+  .noti .nb { margin-top: 12px; font-size: 44px; font-weight: 700; color: #222; line-height: 1.4; }
   .callout { position: absolute; z-index: 40; background: #a63a3a; color: #fff; font-weight: 900; font-size: 46px; padding: 18px 30px; border-radius: 18px; box-shadow: 0 14px 30px rgba(166,58,58,.35); }
   .callout::after { content: ""; position: absolute; left: 60px; bottom: -22px; border: 12px solid transparent; border-top: 14px solid #a63a3a; }
   .callout.green { background: #0e5a50; box-shadow: 0 14px 30px rgba(14,90,80,.35); }
@@ -200,6 +206,17 @@ hook((t) => {
     fc.style.top = r.top + r.height * 0.45 - 60 + "px";
   }
 });
+
+/* opening hook: notification storm */
+const badge = el("div", "", "99+", tb);
+badge.style.cssText = "position:absolute;left:770px;top:28px;background:#e5483b;color:#fff;font-size:30px;font-weight:900;padding:4px 14px;border-radius:24px;";
+show(badge, 0.25, "pop", 0.3);
+const noti = el("div", "noti", `<div class="nh"><span class="ni">💬</span>高三(5)班家长群<span class="nt">现在</span></div><div class="nb">[99+条] 张妈妈：孩子模考三百多分，能走单招吗？</div>`);
+anim(noti, [{ transform: "translateY(-260px)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }], 0.15, 0.35, { ease: "back" });
+anim(noti, [{ transform: "translateX(0)" }, { transform: "translateX(-14px)" }, { transform: "translateX(14px)" }, { transform: "translateX(-10px)" }, { transform: "translateX(0)" }], 0.55, 0.35, { ease: "linear", composite: "add" });
+hide(noti, S("m1") - 0.25, "up", 0.3);
+[0.15, 0.4, 0.62].forEach((t) => sfx(t, "ding", 0.55));
+anim(stage, [{ transform: "translateX(0)" }, { transform: "translateX(-8px)" }, { transform: "translateX(8px)" }, { transform: "translateX(-5px)" }, { transform: "translateX(0)" }], 0.55, 0.3, { ease: "linear", fill: "none" });
 
 /* end card */
 C.endcard(S("end") - 0.3);
