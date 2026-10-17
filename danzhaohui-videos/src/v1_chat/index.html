@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: #ececec; }
+  .band { position: absolute; left: 0; right: 0; top: 0; height: 420px; background: linear-gradient(160deg, #8c2f2f, #a63a3a 55%, #b8513f); overflow: hidden; z-index: 20; }
+  .band::after { content: ""; position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: multiply; opacity: .35; }
+  .band .k1 { position: absolute; left: 60px; top: 150px; font-family: var(--serif); font-weight: 900; font-size: 50px; color: var(--gold-l); letter-spacing: 4px; z-index: 2; }
+  .band .k2 { position: absolute; left: 60px; top: 222px; font-family: var(--serif); font-weight: 900; font-size: 92px; color: #fff; letter-spacing: 2px; z-index: 2; white-space: nowrap; text-shadow: 0 6px 0 rgba(0,0,0,.18); }
+  .band .k2 b { color: #ffe08a; }
+  .tagdemo { position: absolute; right: 36px; top: 160px; z-index: 3; font-size: 26px; color: #fff; border: 2px solid rgba(255,255,255,.6); padding: 4px 14px; border-radius: 8px; }
+  .titlebar { position: absolute; top: 420px; left: 0; right: 0; height: 120px; background: #f7f7f7; border-bottom: 2px solid #e2e2e2; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 700; z-index: 10; }
+  .titlebar .back { position: absolute; left: 40px; font-size: 60px; font-weight: 400; }
+  .titlebar .more { position: absolute; right: 44px; font-size: 54px; letter-spacing: 4px; }
+  .viewport { position: absolute; top: 540px; left: 0; right: 0; height: 950px; overflow: hidden; }
+  .list { position: absolute; left: 0; right: 0; top: 0; padding: 30px 0 40px; }
+  .msg { display: flex; gap: 22px; padding: 18px 36px; align-items: flex-start; }
+  .msg.me { flex-direction: row-reverse; }
+  .av { width: 100px; height: 100px; border-radius: 16px; flex: none; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 46px; font-weight: 900; font-family: var(--serif); }
+  .body { display: flex; flex-direction: column; max-width: 760px; }
+  .me .body { align-items: flex-end; }
+  .name { font-size: 28px; color: #8a8a8a; margin: 0 6px 8px; }
+  .bub { position: relative; background: #fff; border-radius: 16px; padding: 22px 28px; font-size: 44px; line-height: 1.45; box-shadow: 0 2px 2px rgba(0,0,0,.04); }
+  .bub::before { content: ""; position: absolute; left: -14px; top: 30px; border: 14px solid transparent; border-right-color: #fff; border-left: 0; }
+  .me .bub { background: #a5e27c; }
+  .me .bub::before { left: auto; right: -14px; border-right: 0; border-left: 14px solid #a5e27c; }
+  .bub b { color: #a63a3a; }
+  .me .bub b { color: #7a1f1f; background: rgba(255,255,255,.45); padding: 0 6px; border-radius: 6px; }
+  .bub.speaking { box-shadow: 0 0 0 5px rgba(217,164,65,.55); }
+  .card { width: 700px; background: #fff; border-radius: 16px; padding: 26px 28px 18px; box-shadow: 0 2px 2px rgba(0,0,0,.04); }
+  .card .ct { font-size: 40px; font-weight: 700; line-height: 1.35; }
+  .card .row { display: flex; gap: 20px; margin-top: 14px; }
+  .card .cd { flex: 1; font-size: 32px; color: #777; line-height: 1.45; }
+  .card .thumb { width: 150px; height: 150px; border-radius: 10px; background: url(../assets/hero.jpg) 30% center/cover; position: relative; flex: none; }
+  .card .thumb::after { content: "招"; position: absolute; left: 42px; top: 42px; width: 66px; height: 66px; border-radius: 12px; background: #a63a3a; color: #fff; font-family: var(--serif); font-weight: 900; font-size: 42px; display: flex; align-items: center; justify-content: center; }
+  .card .cf { border-top: 2px solid #eee; margin-top: 18px; padding-top: 14px; font-size: 28px; color: #999; }
+  .inputbar { position: absolute; top: 1490px; left: 0; right: 0; height: 130px; background: #f7f7f7; border-top: 2px solid #e2e2e2; display: flex; align-items: center; gap: 24px; padding: 0 30px; }
+  .inputbar .ib { flex: 1; height: 84px; background: #fff; border-radius: 12px; }
+  .inputbar .ic { width: 70px; height: 70px; border-radius: 50%; border: 4px solid #333; display: flex; align-items: center; justify-content: center; font-size: 46px; font-weight: 300; }
+  .foot { position: absolute; top: 1620px; left: 0; right: 0; bottom: 0; background: #f7f7f7; }
+  /* browser */
+  .browser { position: absolute; left: 0; right: 0; top: 420px; bottom: 0; background: #fff; z-index: 30; overflow: hidden; box-shadow: 0 -20px 60px rgba(0,0,0,.25); }
+  .bchrome { position: absolute; left: 0; right: 0; top: 0; height: 130px; background: #f2f2f2; display: flex; align-items: center; padding: 0 30px; gap: 22px; z-index: 2; border-bottom: 2px solid #ddd; }
+  .bchrome .x { font-size: 52px; color: #333; width: 50px; }
+  .bchrome .url { flex: 1; height: 84px; border-radius: 42px; background: #e4e4e4; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 600; color: #222; letter-spacing: 1px; }
+  .bchrome .url i { font-style: normal; color: #0e5a50; margin-right: 10px; font-size: 34px; }
+  .bview { position: absolute; left: 0; right: 0; top: 130px; bottom: 0; overflow: hidden; }
+  .shot { position: absolute; left: 0; top: 0; width: 1080px; }
+  .finger { position: absolute; z-index: 60; width: 120px; height: 120px; pointer-events: none; }
+  .finger .ring { position: absolute; left: 10px; top: 10px; width: 100px; height: 100px; border-radius: 50%; background: rgba(166,58,58,.35); border: 5px solid rgba(255,255,255,.95); }
+  .finger .hand { position: absolute; left: 40px; top: 44px; font-size: 110px; filter: drop-shadow(0 8px 10px rgba(0,0,0,.3)); font-family: "Noto Color Emoji"; }
+  .callout { position: absolute; z-index: 40; background: #a63a3a; color: #fff; font-weight: 900; font-size: 46px; padding: 18px 30px; border-radius: 18px; box-shadow: 0 14px 30px rgba(166,58,58,.35); }
+  .callout::after { content: ""; position: absolute; left: 60px; bottom: -22px; border: 12px solid transparent; border-top: 14px solid #a63a3a; }
+  .callout.green { background: #0e5a50; box-shadow: 0 14px 30px rgba(14,90,80,.35); }
+  .callout.green::after { border-top-color: #0e5a50; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, seg, TL, prog, ease } = E;
+C.filters();
+const stage = document.getElementById("stage");
+
+/* header band */
+const band = el("div", "band");
+const k1 = el("div", "k1", "家长群里问疯了——", band);
+const k2 = el("div", "k2", "孩子该不该走<b>单招</b>？", band);
+el("div", "tagdemo", "情景演绎", band);
+show(k1, 0.1, "left", 0.5);
+show(k2, 0.3, "slam", 0.6);
+sfx(0.3, "impact", 0.7);
+
+const tb = el("div", "titlebar", `<span class="back">‹</span>高三(5)班家长群(126)<span class="more">···</span>`);
+const vp = el("div", "viewport");
+const list = el("div", "list", "", vp);
+el("div", "inputbar", `<div class="ic">◎</div><div class="ib"></div><div class="ic">☺</div><div class="ic">+</div>`);
+el("div", "foot");
+
+const PEOPLE = {
+  zhang: { name: "张妈妈（高三5班）", color: "#e08a5a", ch: "张" },
+  li: { name: "李爸爸", color: "#4f7cc4", ch: "李" },
+  wang: { name: "王妈妈", color: "#b0679e", ch: "王" },
+  yang: { name: "杨老师", color: "#0e5a50", ch: "杨", me: true },
+};
+const HL = ["照常高考", "不受影响", "不再参加当年高考", "愿意去读", "88所学校", "2126条", "免费查", "护理", "官方招生章程直达", "核对原文", "2026年资料", "以官方通知为准", "单招汇"];
+function mark(text) {
+  let h = text;
+  for (const k of HL) h = h.split(k).join(`<b>${k}</b>`);
+  return h;
+}
+
+const items = [];
+function addMsg(who, html, t, isCard) {
+  const p = PEOPLE[who];
+  const m = el("div", "msg" + (p.me ? " me" : ""), `<div class="av" style="background:${p.color}">${p.ch}</div><div class="body"><div class="name">${p.name}</div>${isCard ? html : `<div class="bub">${html}</div>`}</div>`, list);
+  show(m, t, p.me ? "right" : "left", 0.35);
+  anim(m.querySelector(".bub, .card"), [{ transform: "scale(.6)", transformOrigin: p.me ? "right top" : "left top" }, { transform: "scale(1)", transformOrigin: p.me ? "right top" : "left top" }], t, 0.35, { ease: "back" });
+  sfx(t, p.me ? "pop" : "ding", p.me ? 0.9 : 0.6);
+  items.push({ m, t });
+  return m;
+}
+
+const msgs = TL.segments.filter((s) => s.id.startsWith("m"));
+const script = { m1: "zhang", m2: "li", m3: "wang", m4: "yang", m5: "yang", m6: "yang", m7: "yang", m8: "zhang", m9: "yang", m10: "yang", m11: "li", m12: "yang" };
+const bubbles = {};
+for (const s of msgs) {
+  const m = addMsg(script[s.id], mark(s.text), s.start - 0.12);
+  bubbles[s.id] = m.querySelector(".bub");
+}
+const cardT = End("m7") + 0.15;
+const card = addMsg("yang", `<div class="card"><div class="ct">单招汇｜湖南单招院校与专业查询</div><div class="row"><div class="cd">88所学校 · 2126条院校专业记录 · 18所历史分数线，免费查</div><div class="thumb"></div></div><div class="cf">🔗 danzhaohui.com</div></div>`, cardT, true);
+// keep DOM order chronological
+const sorted = items.slice().sort((a, b) => a.t - b.t);
+sorted.forEach((it) => list.appendChild(it.m));
+
+/* speaking highlight */
+hook((t) => {
+  for (const s of msgs) {
+    const b = bubbles[s.id];
+    const on = t >= s.start && t <= s.end;
+    if (b.classList.contains("speaking") !== on) b.classList.toggle("speaking", on);
+  }
+});
+
+/* auto scroll: keep newest message in view */
+let layout = null;
+const VH = 950;
+hook((t) => {
+  if (!layout) layout = sorted.map((it) => ({ t: it.t, bottom: it.m.offsetTop + it.m.offsetHeight + 40 }));
+  let off = 0;
+  for (const L of layout) {
+    const target = Math.max(0, L.bottom - VH);
+    const p = prog(t, L.t - 0.05, 0.4, ease.out);
+    off = off + (target - off) * p;
+  }
+  list.style.transform = `translateY(${-off}px)`;
+});
+
+/* finger helper */
+function finger(x, y, tIn, tTap, tOut, parent) {
+  const f = el("div", "finger", `<div class="ring"></div><div class="hand">👆</div>`, parent || stage);
+  f.style.left = x - 60 + "px";
+  f.style.top = y - 60 + "px";
+  show(f, tIn, [{ opacity: 0, transform: "translate(120px,200px)" }, { opacity: 1, transform: "none" }], tTap - tIn - 0.1, "out");
+  anim(f.querySelector(".ring"), [{ transform: "scale(.2)", opacity: 1 }, { transform: "scale(1.6)", opacity: 0 }], tTap, 0.5, { ease: "out" });
+  anim(f.querySelector(".hand"), [{ transform: "scale(1)" }, { transform: "scale(.85)" }, { transform: "scale(1)" }], tTap - 0.05, 0.2, { ease: "linear" });
+  hide(f, tOut, "fade", 0.25);
+  sfx(tTap, "tap", 1);
+}
+
+/* tap the link card -> open site */
+const tTap = S("m9") + 1.0;
+const bt = tTap + 0.25;
+const br = el("div", "browser");
+br.innerHTML = `<div class="bchrome"><div class="x">✕</div><div class="url"><i>🔒</i>danzhaohui.com</div><div class="x">⋯</div></div><div class="bview"></div>`;
+const bv = br.querySelector(".bview");
+anim(br, [{ transform: "translateY(1500px)" }, { transform: "translateY(0)" }], bt, 0.55, { ease: "out" });
+sfx(bt, "whoosh", 0.7);
+const home = el("img", "shot", null, bv); home.src = "../assets/home_top.jpg";
+const majTop = el("img", "shot", null, bv); majTop.src = "../assets/majors_top.jpg";
+const majS = el("img", "shot", null, bv); majS.src = "../assets/majors_search.jpg";
+const school = el("img", "shot", null, bv); school.src = "../assets/school_a.jpg";
+const tNav = bt + 1.0;
+finger(424, 420 + 130 + 443, bt + 0.5, tNav, tNav + 0.4);
+show(majTop, tNav + 0.15, "fade", 0.15);
+sfx(tNav + 0.5, "type", 0.8);
+show(majS, tNav + 1.1, "fade", 0.12);
+anim(majS, [{ transform: "translateY(0)" }, { transform: "translateY(-2350px)" }], tNav + 1.5, 2.2, { fill: "forwards", ease: "inOut" });
+const co1 = el("div", "callout", "护理 · 筛出26条开设记录", br);
+co1.style.left = "300px"; co1.style.top = "330px";
+show(co1, tNav + 3.6, "pop", 0.4);
+sfx(tNav + 3.6, "blip", 0.8);
+hide(co1, S("m10") - 0.1, "fade", 0.2);
+
+const tSchool = S("m10");
+show(school, tSchool, "fade", 0.3);
+anim(school, [{ transform: "translateY(-2950px)" }, { transform: "translateY(-3150px)" }], tSchool, End("m10") - tSchool + 0.5, { ease: "linear" });
+const co2 = el("div", "callout green", "官方招生章程 · 一键直达", br);
+co2.style.left = "200px"; co2.style.top = "640px";
+show(co2, tSchool + 1.0, "pop", 0.4);
+sfx(tSchool + 1.0, "blip", 0.8);
+anim(br, [{ transform: "translateY(0)" }, { transform: "translateY(1500px)" }], End("m10") + 0.3, 0.45, { fill: "forwards", ease: "in" });
+sfx(End("m10") + 0.3, "swish", 0.6);
+
+/* finger on link card: position resolved at first frame */
+const fc = el("div", "finger", `<div class="ring"></div><div class="hand">👆</div>`);
+show(fc, tTap - 0.5, [{ opacity: 0, transform: "translate(120px,200px)" }, { opacity: 1, transform: "none" }], 0.4, "out");
+anim(fc.querySelector(".ring"), [{ transform: "scale(.2)", opacity: 1 }, { transform: "scale(1.6)", opacity: 0 }], tTap, 0.5, { ease: "out" });
+hide(fc, tTap + 0.35, "fade", 0.2);
+sfx(tTap, "tap", 1);
+hook((t) => {
+  if (Math.abs(t - tTap) < 1.2) {
+    const r = card.querySelector(".card").getBoundingClientRect();
+    fc.style.left = r.left + r.width * 0.45 - 60 + "px";
+    fc.style.top = r.top + r.height * 0.45 - 60 + "px";
+  }
+});
+
+/* end card */
+C.endcard(S("end") - 0.3);
+</script>
+</body>
+</html>
