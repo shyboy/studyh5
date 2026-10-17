@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: radial-gradient(90% 60% at 50% 40%, #6b4f3a 0%, #4a3527 55%, #2e2119 100%); }
+  .desk { position: absolute; inset: 0; background: repeating-linear-gradient(92deg, rgba(0,0,0,.05) 0 3px, transparent 3px 26px), repeating-linear-gradient(88deg, rgba(255,255,255,.03) 0 2px, transparent 2px 41px); }
+  .pad { position: absolute; left: 50px; top: 230px; width: 980px; height: 1120px; perspective: 2600px; }
+  .page {
+    position: absolute; inset: 0; border-radius: 6px 6px 14px 14px; transform-origin: 50% 0;
+    background:
+      linear-gradient(90deg, transparent 118px, rgba(200,70,70,.55) 118px, rgba(200,70,70,.55) 121px, transparent 121px),
+      repeating-linear-gradient(180deg, transparent 0 87px, rgba(70,110,170,.22) 87px 89px),
+      #fbf6ea;
+    background-position: 0 0, 0 70px, 0 0;
+    box-shadow: 0 30px 60px rgba(0,0,0,.35), 0 2px 0 #e9e1cf, 0 4px 0 #ddd3bd, 0 6px 0 #d2c7af;
+    overflow: hidden; backface-visibility: hidden;
+  }
+  .page::after { content: ""; position: absolute; inset: 0; background: url(../lib/paper.jpg) center/cover; mix-blend-mode: multiply; opacity: .35; pointer-events: none; }
+  .rings { position: absolute; left: 70px; right: 70px; top: 205px; height: 60px; z-index: 30; display: flex; justify-content: space-between; }
+  .rings i { width: 26px; height: 64px; border-radius: 13px; background: linear-gradient(90deg, #8d8d8d, #e8e8e8 45%, #9a9a9a); box-shadow: 0 4px 6px rgba(0,0,0,.4); }
+  .w { position: absolute; font-family: "LXGW WenKai"; color: #1f2a44; font-size: 54px; line-height: 1.3; white-space: nowrap; z-index: 2; }
+  .w.h { font-weight: 500; font-size: 68px; color: #a63a3a; }
+  .w.s { font-size: 40px; color: #6f6858; }
+  .w.red { color: #b3322c; }
+  .w b { font-weight: 500; color: #a63a3a; }
+  .mk { position: absolute; height: 46px; background: rgba(255,207,64,.62); border-radius: 6px; transform-origin: left; z-index: 1; mix-blend-mode: multiply; }
+  .pen { position: absolute; z-index: 60; font-size: 120px; font-family: "Noto Color Emoji"; pointer-events: none; transform: rotate(0deg); filter: drop-shadow(6px 12px 6px rgba(0,0,0,.3)); }
+  svg.draw { position: absolute; left: 0; top: 0; width: 980px; height: 1120px; z-index: 3; overflow: visible; }
+  svg.draw path { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .cat { position: absolute; width: 92px; height: 92px; border-radius: 50%; border: 5px solid #a63a3a; color: #a63a3a; font-family: "LXGW WenKai"; font-weight: 500; font-size: 60px; display: flex; align-items: center; justify-content: center; z-index: 2; transform: rotate(-6deg); }
+  .sticky { position: absolute; left: 520px; top: 690px; width: 420px; height: 380px; background: #ffe27a; box-shadow: 0 18px 30px rgba(0,0,0,.25); transform: rotate(4deg); z-index: 20; padding: 46px 34px 20px; font-family: "LXGW WenKai"; color: #3a2a12; }
+  .sticky::before { content: ""; position: absolute; left: 140px; top: -26px; width: 150px; height: 52px; background: rgba(255,255,255,.55); transform: rotate(-3deg); box-shadow: 0 2px 4px rgba(0,0,0,.1); }
+  .sticky .sn { font-family: var(--serif); font-weight: 900; font-size: 64px; color: #a63a3a; display: flex; align-items: center; gap: 14px; }
+  .sticky .sn i { font-style: normal; width: 64px; height: 64px; border-radius: 12px; background: #a63a3a; color: #fff; font-size: 40px; display: flex; align-items: center; justify-content: center; }
+  .sticky .sl { font-size: 35px; white-space: nowrap; line-height: 1.55; margin-top: 12px; }
+  .sticky .su { font-family: var(--sans); font-weight: 700; font-size: 36px; margin-top: 14px; color: #0e5a50; }
+  .bar2 { position: absolute; height: 90px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: "LXGW WenKai"; font-weight: 500; font-size: 44px; color: #fff; z-index: 2; }
+</style>
+</head>
+<body>
+<div id="stage"><div class="desk"></div></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const { el, show, hide, anim, sfx, hook, S, End, seg, prog, ease } = E;
+C.filters();
+C.brandmark(null, { light: true });
+E.subtitles({ highlight: ["单独考试", "单独录取", "高考之前", "不再参加当年高考", "照常高考", "考生类别", "不是", "失去资格", "600分", "各占一半", "1所学校", "官方通知为准", "单招汇", "免费查"] });
+
+const at = (id, i = 0) => S(id) + (seg[id].subs[i] ? seg[id].subs[i].t : 0);
+const pad = el("div", "pad");
+const rings = el("div", "rings", Array.from({ length: 12 }, () => "<i></i>").join(""));
+const pen = el("div", "pen", "🖊️");
+const writes = [];
+
+function page() {
+  const p = el("div", "page", "", pad);
+  pad.insertBefore(p, pad.firstChild); // later pages lie underneath
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("class", "draw");
+  p.appendChild(svg);
+  p.svg = svg;
+  return p;
+}
+function flip(p, t) {
+  anim(p, [{ transform: "rotateX(0deg)", opacity: 1 }, { transform: "rotateX(-120deg)", opacity: 1, offset: 0.85 }, { transform: "rotateX(-150deg)", opacity: 0 }], t, 0.75, { fill: "forwards", ease: "inOut" });
+  sfx(t, "page", 0.9);
+}
+/* handwriting: text is revealed left→right while the pen follows */
+function W(p, html, x, y, t0, cls = "", cps = 16) {
+  const d = el("div", "w " + cls, html, p);
+  d.style.left = x + "px";
+  d.style.top = y + "px";
+  const n = d.textContent.length;
+  const dur = Math.min(2.2, Math.max(0.35, n / cps));
+  anim(d, [{ clipPath: "inset(-20px 100% -20px -10px)" }, { clipPath: "inset(-20px -10px -20px -10px)" }], t0, dur, { ease: "linear" });
+  writes.push({ d, t0, dur });
+  sfx(t0, "scribble", Math.min(1, 0.4 + n / 20));
+  return d;
+}
+function marker(p, x, y, w, t0, dur = 0.4) {
+  const m = el("div", "mk", "", p);
+  m.style.cssText += `left:${x}px;top:${y}px;width:${w}px;`;
+  anim(m, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], t0, dur, { ease: "out" });
+  sfx(t0, "swish", 0.35);
+  return m;
+}
+function stroke(p, d, color, width, t0, dur = 0.6) {
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", d);
+  path.setAttribute("stroke", color);
+  path.setAttribute("stroke-width", width);
+  p.svg.appendChild(path);
+  const L = 4000;
+  path.style.strokeDasharray = L;
+  anim(path, [{ strokeDashoffset: L }, { strokeDashoffset: 0 }], t0, dur, { ease: "inOut" });
+  return path;
+}
+function ellipse(cx, cy, rx, ry) {
+  return `M ${cx + rx} ${cy - 6} C ${cx + rx} ${cy - ry * 1.1}, ${cx - rx * 1.05} ${cy - ry}, ${cx - rx} ${cy + 4} C ${cx - rx} ${cy + ry * 1.1}, ${cx + rx * 1.02} ${cy + ry * 1.05}, ${cx + rx * 1.08} ${cy - ry * 0.3}`;
+}
+function arrow(x1, y1, x2, y2) {
+  const mx = (x1 + x2) / 2 + (y2 - y1) * 0.12, my = (y1 + y2) / 2 - (x2 - x1) * 0.12;
+  const a = Math.atan2(y2 - my, x2 - mx), h = 30;
+  return `M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2} M ${x2 - h * Math.cos(a - 0.45)} ${y2 - h * Math.sin(a - 0.45)} L ${x2} ${y2} L ${x2 - h * Math.cos(a + 0.45)} ${y2 - h * Math.sin(a + 0.45)}`;
+}
+hook((t) => {
+  let act = null;
+  for (const w of writes) if (t >= w.t0 - 0.15 && t <= w.t0 + w.dur + 0.1) act = w;
+  if (!act) { pen.style.opacity = 0; return; }
+  const r = act.d.getBoundingClientRect();
+  const p = E.clamp((t - act.t0) / act.dur);
+  pen.style.opacity = 1;
+  const wob = Math.sin(t * 40) * 6;
+  pen.style.left = r.left + r.width * p - 14 + "px";
+  pen.style.top = r.top + r.height * 0.55 - 110 + wob + "px";
+});
+
+/* P1 cover */
+const P1 = page();
+W(P1, "单招汇 · 家长笔记", 160, 110, 0.3, "s", 20);
+const big1 = el("div", "w brush", "一页纸", P1);
+big1.style.cssText += "left:0;right:0;text-align:center;top:300px;font-family:var(--brush);font-size:190px;color:#a63a3a;";
+show(big1, at("n1", 2) - 0.2, "zoom", 0.5);
+sfx(at("n1", 2) - 0.2, "stamp", 0.6);
+W(P1, "看懂高职单招", 220, 560, at("n1", 1), "h", 9).style.fontSize = "100px";
+stroke(P1, "M 210 710 C 380 690, 560 735, 790 700", "#a63a3a", 9, at("n1", 2) + 0.4, 0.6);
+W(P1, "湖南 · 2027备考参考（基于2026年资料）", 170, 860, at("n1", 2) + 0.6, "s", 30);
+
+/* P2 what */
+const P2 = page();
+flip(P1, S("n2") - 0.55);
+W(P2, "① 单招是什么？", 150, 95, at("n2", 0), "h", 10);
+W(P2, "高职院校 单独考试、单独录取", 150, 250, at("n2", 2), "", 12);
+marker(P2, 380, 268, 470, at("n2", 2) + 1.4);
+W(P2, "时间：在高考之前完成", 150, 340, at("n2", 3), "", 12);
+const box = W(P2, "参加单招", 380, 470, at("n3", 0) - 0.1, "h", 10);
+stroke(P2, "M 360 455 L 650 450 L 655 560 L 362 565 Z", "#1f2a44", 4, at("n3", 0) + 0.3, 0.6);
+stroke(P2, arrow(420, 580, 260, 720), "#0e5a50", 6, at("n3", 1) - 0.1, 0.4);
+W(P2, "录取 ✓", 150, 740, at("n3", 1), "", 12).style.color = "#0e5a50";
+W(P2, "不再参加<br>当年高考", 150, 820, at("n3", 1) + 0.5, "", 12).style.whiteSpace = "normal";
+stroke(P2, arrow(600, 580, 740, 720), "#a63a3a", 6, at("n3", 2) - 0.1, 0.4);
+W(P2, "没录取", 600, 740, at("n3", 2), "red", 12);
+W(P2, "6月照常高考<br>不受影响", 600, 820, at("n3", 3), "", 12);
+marker(P2, 595, 838, 300, at("n3", 3) + 0.9);
+
+/* P3 categories */
+const P3 = page();
+flip(P2, S("n4") - 0.55);
+W(P3, "② 先分清考生类别", 150, 95, at("n4", 1), "h", 10);
+const cats = [["A", "有学考成绩的应届普高生", 0], ["B", "中职生、往届生、同等学力", 2], ["C", "体育特长生", 4], ["D", "退役军人等社会人员", 5]];
+cats.forEach(([c, txt, si], i) => {
+  const y = 250 + i * 150;
+  const ct = at("n5", si);
+  const cc = el("div", "cat", c, P3);
+  cc.style.left = "150px"; cc.style.top = y - 8 + "px";
+  show(cc, ct, "pop", 0.35);
+  sfx(ct, "stamp", 0.35);
+  W(P3, txt, 275, y + 10, ct + 0.25, "", 14);
+});
+stroke(P3, ellipse(520, 270, 400, 75), "#b3322c", 6, at("n6", 1), 0.7);
+const neq = W(P3, "≠ 成绩好！", 720, 150, at("n6", 1) + 0.6, "red", 10);
+neq.style.fontSize = "56px"; neq.style.fontWeight = 500; neq.style.transform = "rotate(-5deg)";
+W(P3, "⚠ 类别选错，可能失去资格", 150, 880, at("n6", 2), "red", 12);
+marker(P3, 200, 900, 640, at("n6", 3) + 0.2, 0.5);
+
+/* P4 exam + choices */
+const P4 = page();
+flip(P3, S("n7") - 0.55);
+W(P4, "③ 考什么？", 150, 95, at("n7", 0), "h", 10);
+W(P4, "文化素质 ＋ 职业技能 ＝ <b>600分</b>", 150, 240, at("n7", 2), "", 12);
+const b1 = el("div", "bar2", "文化素质 50%", P4);
+b1.style.cssText += "left:150px;top:370px;width:340px;background:#0e5a50;";
+const b2 = el("div", "bar2", "职业技能 50%", P4);
+b2.style.cssText += "left:500px;top:370px;width:340px;background:#a63a3a;";
+show(b1, at("n7", 4), [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], 0.5);
+show(b2, at("n7", 4) + 0.4, [{ clipPath: "inset(0 100% 0 0)" }, { clipPath: "inset(0 0 0 0)" }], 0.5);
+sfx(at("n7", 4), "swish", 0.5);
+W(P4, "（普通类专业；艺体等可适当提高技能占比）", 150, 480, at("n7", 4) + 0.9, "s", 30);
+W(P4, "④ 志愿怎么报？", 150, 610, at("n8", 0), "h", 10);
+W(P4, "第一志愿：只报 1 所", 150, 760, at("n8", 2), "", 12);
+W(P4, "第二志愿：只报 1 所", 150, 850, at("n8", 2) + 1.0, "", 12);
+stroke(P4, ellipse(555, 790, 90, 50), "#b3322c", 5, at("n8", 3), 0.5);
+stroke(P4, ellipse(555, 880, 90, 50), "#b3322c", 5, at("n8", 3) + 0.3, 0.5);
+W(P4, "→ 选校要提前做功课", 150, 960, at("n8", 4), "red", 12);
+marker(P4, 220, 978, 440, at("n8", 4) + 0.9);
+
+/* P5 timeline + sticky */
+const P5 = page();
+flip(P4, S("n9") - 0.55);
+W(P5, "⑤ 时间线（2026年参考）", 150, 95, at("n9", 0), "h", 12);
+const tl = [["3月14—15日", "第一志愿考试", 1], ["4月7日", "查第一志愿结果", 2], ["4月11—12日", "第二志愿考试", 2], ["4月30日", "查第二志愿结果", 2]];
+stroke(P5, "M 175 270 L 178 640", "#1f2a44", 4, at("n9", 1) - 0.2, 1.6);
+tl.forEach(([d, e, si], i) => {
+  const y = 250 + i * 110;
+  const tt = at("n9", si) + (i >= 2 ? (i - 1) * 0.5 : 0);
+  stroke(P5, `M 165 ${y + 34} a 12 12 0 1 0 24 0 a 12 12 0 1 0 -24 0`, "#a63a3a", 10, tt, 0.25);
+  W(P5, `<b>${d}</b>　${e}`, 220, y, tt, "", 18).style.fontSize = "52px";
+});
+W(P5, "2027年 → 以官方通知为准", 150, 690, at("n9", 3), "red", 12);
+marker(P5, 330, 708, 380, at("n9", 4) + 0.3);
+const sticky = el("div", "sticky", `<div class="sn"><i>招</i>单招汇</div><div class="sl">88所学校·专业·学费<br>官方章程直达·免费查</div><div class="su">danzhaohui.com</div>`, P5);
+sticky.style.cssText += "top:770px;left:460px;width:470px;height:320px;padding-top:34px;";
+anim(sticky, [{ opacity: 0, transform: "translate(160px,-260px) rotate(18deg) scale(1.3)" }, { opacity: 1, transform: "rotate(4deg)" }], at("n10", 0), 0.55, { ease: "out" });
+sfx(at("n10", 0) + 0.45, "stamp", 0.6);
+anim(P5, [{ transform: "none" }, { transform: "scale(1.03)" }], at("n10", 0) + 0.6, 4, { fill: "forwards", ease: "inOut" });
+
+C.endcard(S("end") - 0.3);
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  html, body { height: auto; }
+  #stage { height: var(--h); display: flex; flex-direction: column; justify-content: center; }
+  .wrap { position: relative; height: 1440px; }
+  .tag { position: absolute; left: 70px; top: 80px; display: flex; align-items: center; gap: 16px; font-size: 38px; font-weight: 900; }
+  .tag i { font-style: normal; width: 70px; height: 70px; border-radius: 14px; background: #a63a3a; color: #fff; font-family: var(--serif); font-size: 44px; display: flex; align-items: center; justify-content: center; }
+  .tag span { opacity: .65; font-weight: 700; margin-left: 6px; }
+  .t1 { position: absolute; left: 70px; right: 70px; font-family: var(--serif); font-weight: 900; line-height: 1.15; letter-spacing: 2px; }
+  .t1 b { color: #a63a3a; }
+  .foot { position: absolute; left: 70px; right: 70px; bottom: 70px; display: flex; justify-content: space-between; align-items: center; font-size: 34px; font-weight: 700; }
+  .pill { background: #0e5a50; color: #fff; padding: 12px 30px; border-radius: 40px; }
+  .bub { position: absolute; background: #fff; border-radius: 24px; padding: 24px 32px; font-size: 44px; box-shadow: 0 10px 30px rgba(0,0,0,.12); font-weight: 700; }
+  .bub.g { background: #a5e27c; }
+  .seal { position: absolute; width: 230px; height: 230px; border-radius: 24px; color: #fff; font-family: var(--brush); font-size: 190px; display: flex; align-items: center; justify-content: center; filter: url(#roughen); }
+</style>
+</head>
+<body>
+<div id="stage"><div class="wrap" id="w"></div></div>
+<script src="../lib/engine.js"></script>
+<script src="../lib/common.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const id = q.get("id"), H = +q.get("h") || 1440;
+document.documentElement.style.setProperty("--h", H + "px");
+document.body.style.height = H + "px";
+C.filters();
+const stage = document.getElementById("stage"), w = document.getElementById("w");
+const h = (html) => { const d = document.createElement("div"); d.innerHTML = html; while (d.firstChild) w.appendChild(d.firstChild); };
+const tag = (n, light) => `<div class="tag" style="color:${light ? "#fff" : "#28251d"}"><i>招</i>单招汇<span>· 家长必看 No.${n}</span></div>`;
+const foot = (txt, light) => `<div class="foot" style="color:${light ? "rgba(255,255,255,.8)" : "#6f6858"}"><div>${txt}</div><div class="pill">danzhaohui.com</div></div>`;
+
+const paper = "background:#f3ecdf url(../lib/paper.jpg) center/cover;";
+if (id === "1") {
+  stage.style.cssText += "background:linear-gradient(170deg,#8c2f2f,#a63a3a 60%,#b8513f);";
+  h(tag(1, true));
+  h(`<div class="t1" style="top:200px;color:#ffe08a;font-size:96px">家长群吵翻了</div><div class="t1" style="top:330px;color:#fff;font-size:150px">孩子该不该<br>走单招？</div>`);
+  h(`<div class="bub" style="left:70px;top:740px">单招录取了，还能高考吗？😟</div><div class="bub" style="left:70px;top:880px">湖南那么多高职，怎么选😭</div><div class="bub g" style="right:70px;top:1030px">别急，一条一条说 👇</div>`);
+  h(foot("情景演绎 · 3个关键规则讲清楚", true));
+} else if (id === "2") {
+  stage.style.cssText += "background:radial-gradient(120% 70% at 50% 35%,#173a33 0%,#0c1714 70%);color:#f3ecdf;";
+  h(tag(2, true));
+  h(`<div class="t1" style="top:190px;font-size:88px;color:#f3ecdf">湖南单招学校</div><div style="position:absolute;left:40px;top:250px;font-family:var(--num);font-size:620px;color:#e3b65b;line-height:1;text-shadow:0 0 80px rgba(227,182,91,.35)">88</div><div class="t1" style="top:820px;left:560px;font-size:110px;color:#e3b65b">所</div><div class="t1" style="top:960px;font-size:104px;color:#fff">我一所一所<br>数了一遍</div>`);
+  h(foot("城市 · 公办民办 · 热门专业 · 分数线", true));
+} else if (id === "3") {
+  stage.style.cssText += "background:radial-gradient(90% 60% at 50% 40%,#6b4f3a,#3a2a1f);";
+  h(`<div style="position:absolute;left:60px;right:60px;top:190px;bottom:170px;background:#fbf6ea;border-radius:16px;box-shadow:0 30px 60px rgba(0,0,0,.35);background-image:linear-gradient(90deg,transparent 110px,rgba(200,70,70,.5) 110px,rgba(200,70,70,.5) 113px,transparent 113px),repeating-linear-gradient(180deg,transparent 0 87px,rgba(70,110,170,.22) 87px 89px)"></div>`);
+  h(tag(3, true));
+  h(`<div class="t1" style="top:300px;text-align:center;font-family:var(--brush);font-weight:400;font-size:230px;color:#a63a3a">一页纸</div><div class="t1" style="top:600px;text-align:center;font-family:'LXGW WenKai';font-weight:500;font-size:132px;color:#1f2a44">看懂高职单招</div><div class="t1" style="top:820px;left:170px;font-family:'LXGW WenKai';font-weight:500;font-size:52px;color:#1f2a44;line-height:1.7">✓ 单招是什么　✓ ABCD类<br>✓ 考什么　　　✓ 志愿怎么报</div>`);
+  h(foot("家长笔记 · 建议收藏", true));
+} else if (id === "4") {
+  stage.style.cssText += "background:linear-gradient(170deg,#8c2f2f,#a63a3a 60%,#b44a3c);";
+  h(`<div style="position:absolute;left:-40px;right:-40px;top:170px;height:60px;transform:rotate(-3deg);background:repeating-linear-gradient(-45deg,#ffcf3f 0 40px,#28251d 40px 80px)"></div>`);
+  h(tag(4, true).replace('top: 80px', ''));
+  h(`<div class="t1" style="top:300px;color:#ffe08a;font-size:90px">家长注意！</div><div class="t1" style="top:420px;color:#fff;font-size:124px">只走单招<br>也要先<b style="color:#ffe08a">高考报名</b></div><div style="position:absolute;left:70px;right:70px;top:830px;background:#fff;border-radius:26px;padding:40px 50px;"><div style="font-size:44px;font-weight:700;color:#6f6858">湖南2027年高考报名</div><div style="font-family:var(--num);font-size:150px;color:#a63a3a;line-height:1.05">10.14 — 10.30</div><div style="font-size:44px;font-weight:900">双休日不受理 · 逾期不受理</div></div>`);
+  h(foot("附：报名准备清单", true));
+} else if (id === "5") {
+  stage.style.cssText += paper;
+  h(tag(5));
+  h(`<div class="t1" style="top:210px;font-size:96px;color:#6f6858">家长自测</div><div class="t1" style="top:340px;font-size:126px">这5个单招说法<br>你信过<b>几个？</b></div>`);
+  h(`<div class="seal" style="left:90px;top:900px;background:#c0392b;transform:rotate(-8deg)">错</div><div class="seal" style="left:420px;top:930px;background:#0e7a5f;transform:rotate(5deg)">对</div><div class="seal" style="left:750px;top:890px;background:#c0392b;transform:rotate(-4deg);width:230px">错</div>`);
+  h(foot("答案在视频里 · 评论区晒晒你的得分"));
+} else if (id === "6") {
+  stage.style.cssText += "background:radial-gradient(100% 60% at 50% 40%,#e4efec,#b9d1c9);";
+  h(tag(6));
+  h(`<div class="t1" style="top:200px;font-size:104px;color:#0e5a50">手机 3 步</div><div class="t1" style="top:330px;font-size:120px">查到孩子想学的<br>专业在<b>哪些学校</b></div>`);
+  h(`<div style="position:absolute;left:250px;top:700px;width:580px;height:600px;border-radius:70px 70px 0 0;background:#161616;padding:18px 18px 0;overflow:hidden"><div style="height:100%;border-radius:54px 54px 0 0;background:#fff url(../assets/majors_search.jpg) 0 -1450px/544px auto;"></div></div><div style="position:absolute;left:180px;top:1000px;background:#a63a3a;color:#fff;font-size:46px;font-weight:900;padding:16px 30px;border-radius:18px;box-shadow:0 14px 30px rgba(166,58,58,.35)">输入“护理” → 一键列出</div>`);
+  h(foot("建议收藏 · 用的时候就能找到"));
+}
+window.seek = () => {};
+</script>
+</body>
+</html>
