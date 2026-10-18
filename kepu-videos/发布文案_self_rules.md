@@ -1,7 +1,7 @@
 # 不催也能自己动：给5岁孩子建立规则感的6个方法 · 发布包
 
 - 成片：`out/不催也能自己动_给5岁孩子建立规则感的6个方法.mp4`（1920×1080，30fps，7分14秒，含配音、字幕、配乐）
-- 封面：`out/covers/self_rules_16x9.png`、`out/covers/self_rules_4x3.png`
+- 封面：`out/covers/self_rules_16x9.png`（横版平台）、`out/covers/self_rules_4x3.png`（B站动态裁切）、`out/covers/self_rules_3x4.png`（1080×1440，小红书 / 视频号竖版封面）
 - 主打平台：B站、视频号、西瓜视频 / 抖音横屏、YouTube
 
 ## 黄金前三秒是怎么设计的
