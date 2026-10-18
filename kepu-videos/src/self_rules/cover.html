@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<link rel="stylesheet" href="style.css">
+<style>
+  html, body, #stage { width: var(--w); height: var(--h); }
+  #stage.hook-bg { background: radial-gradient(120% 120% at 70% 40%, #ff8a5c 0%, #ff6b4a 45%, #e5412b 100%); }
+  .hb .in { font-size: 54px; }
+  .tagline { position: absolute; left: 90px; top: 770px; display: flex; gap: 22px; }
+  .tagline .pill { font-size: 50px; border: 5px solid var(--ink); }
+</style>
+</head>
+<body>
+<div id="stage" class="hook-bg"><div class="rays"></div></div>
+<script>
+  const q = new URLSearchParams(location.search);
+  const w = +(q.get("w") || 1920), h = +(q.get("h") || 1080);
+  document.documentElement.style.setProperty("--w", w + "px");
+  document.documentElement.style.setProperty("--h", h + "px");
+  const st = document.getElementById("stage");
+  const add = (html, css) => { const d = document.createElement("div"); d.className = "abs"; d.style.cssText = css; d.innerHTML = html; st.appendChild(d); return d; };
+  const bubble = ([x, y, r, t]) => add(`<div class="hb" style="position:relative;transform:rotate(${r}deg)"><div class="in">${t}</div></div>`, `left:${x}px;top:${y}px;z-index:3`);
+  const tag = `<div class="pill pill-sun" style="font-size:42px;border:4px solid var(--ink);padding:6px 26px"><span class="emo">🧒</span> 4–6岁家长必看</div>`;
+  const loadbar = (bw) => `<div class="loadbar" style="width:${bw}px"><div class="lb-t">穿鞋进度 <span>3%</span></div><div class="track"><div class="fill"></div></div></div>`;
+  const headline = (a, n, b) => `<div class="hl1" style="font-size:${a}px">每天催<span class="n" style="font-size:${n}px">100</span>遍</div><div class="hl2" style="font-size:${b}px;margin-top:24px;transform:rotate(-2deg)">越催越慢？</div>`;
+  const tagline = `<div class="pill pill-white">6 个方法</div><div class="pill pill-ink" style="border-color:#fff">让孩子自己动起来</div>`;
+
+  if (h > w) {
+    st.querySelector(".rays").style.top = "62%";
+    add(tag, "left:70px;top:80px");
+    add(headline(124, 190, 196), "left:62px;top:160px;z-index:2");
+    add(`<span class="emo" style="font-size:420px">🧒</span>`, "left:330px;top:680px");
+    add(`<span class="emo" style="font-size:160px">🧸</span>`, "left:730px;top:930px");
+    [[50, 700, -6, "快点！"], [700, 650, 5, "快穿鞋！"], [40, 950, -8, "快快快！"]].forEach(bubble);
+    add(loadbar(480), "left:300px;top:1110px");
+    add(`<div class="tagline" style="position:static;justify-content:center">${tagline}</div>`, "left:0;right:0;top:1255px");
+  } else {
+    const narrow = w < 1700;
+    const kx = narrow ? 980 : 1300;
+    add(`<span class="emo" style="font-size:${narrow ? 360 : 420}px">🧒</span>`, `left:${kx}px;top:${narrow ? 300 : 230}px`);
+    add(`<span class="emo" style="font-size:150px">🧸</span>`, `left:${kx + (narrow ? 300 : 350)}px;top:${narrow ? 520 : 500}px`);
+    add(loadbar(narrow ? 400 : 480), `left:${kx + 10}px;top:${narrow ? 730 : 720}px`);
+    (narrow ? [[960, 90, -6, "快点！"], [1150, 210, 5, "快穿鞋！"]] : [[1010, 90, -6, "快点！"], [1560, 110, 5, "快穿鞋！"], [1120, 560, -8, "快快快！"]]).forEach(bubble);
+    add(tag, "left:90px;top:120px");
+    add(headline(narrow ? 118 : 132, narrow ? 180 : 200, narrow ? 190 : 212), "left:84px;top:210px;z-index:2");
+    add(`<div class="tagline">${tagline}</div>`, "left:0;top:0;width:100%;height:100%");
+  }
+</script>
+</body>
+</html>
