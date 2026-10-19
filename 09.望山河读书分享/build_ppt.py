@@ -1,161 +1,14 @@
-"""生成《望山河》前三篇读书分享 PPT（约 30 分钟，所有文字字号 >= 20pt）。
+"""生成《望山河》前三篇读书分享 PPT（约 30 分钟图文版，所有文字字号 >= 20pt）。
 
 用法: python3 build_ppt.py
-依赖: pip install python-pptx
+依赖: pip install python-pptx pillow
 """
-from pathlib import Path
+from common import *  # noqa: F401,F403
+from common import HERE
 
-from lxml import etree
-from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE
-from pptx.enum.text import MSO_ANCHOR, MSO_AUTO_SIZE, PP_ALIGN
-from pptx.oxml.ns import qn
-from pptx.util import Inches, Pt
-
-HERE = Path(__file__).resolve().parent
-OUT_PPTX = HERE / "《望山河》读书分享.pptx"
-OUT_SCRIPT = HERE / "讲稿.md"
-
-MIN_PT = 20
-
-RED = RGBColor(0x9E, 0x1B, 0x1B)
-DEEP_RED = RGBColor(0x7A, 0x12, 0x12)
-GOLD = RGBColor(0xC8, 0xA1, 0x5A)
-LIGHT_GOLD = RGBColor(0xF3, 0xE6, 0xCC)
-CREAM = RGBColor(0xFB, 0xF6, 0xEE)
-INK = RGBColor(0x2B, 0x2B, 0x2B)
-GRAY = RGBColor(0x5A, 0x5A, 0x5A)
-WHITE = RGBColor(0xFF, 0xFF, 0xFF)
-PALE = RGBColor(0xF7, 0xE7, 0xC6)
-
-SANS = "Microsoft YaHei"
-KAI = "KaiTi"
-
-ALIGN = {"l": PP_ALIGN.LEFT, "c": PP_ALIGN.CENTER, "r": PP_ALIGN.RIGHT}
-ANCHOR = {"t": MSO_ANCHOR.TOP, "m": MSO_ANCHOR.MIDDLE, "b": MSO_ANCHOR.BOTTOM}
-
-prs = Presentation()
-prs.slide_width = Inches(13.333)
-prs.slide_height = Inches(7.5)
-BLANK = prs.slide_layouts[6]
-
-SLIDES = []  # (title, minutes, notes) for 讲稿.md
-
-
-def _set_font(run, name):
-    run.font.name = name
-    rPr = run._r.get_or_add_rPr()
-    for tag in ("a:ea", "a:cs"):
-        el = rPr.find(qn(tag))
-        if el is None:
-            el = etree.SubElement(rPr, qn(tag))
-        el.set("typeface", name)
-
-
-def text(slide, x, y, w, h, content, size=24, color=INK, bold=False, font=SANS,
-         align="l", anchor="t", em=RED, spacing=1.2, space_after=0):
-    """content: 字符串（\\n 分段）或段落列表；用 **…** 标记强调文字。"""
-    assert size >= MIN_PT, f"font size {size} < {MIN_PT}"
-    box = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-    tf = box.text_frame
-    tf.word_wrap = True
-    tf.auto_size = MSO_AUTO_SIZE.NONE
-    tf.vertical_anchor = ANCHOR[anchor]
-    for side in ("left", "right", "top", "bottom"):
-        setattr(tf, f"margin_{side}", Inches(0.04))
-    paras = content.split("\n") if isinstance(content, str) else content
-    for i, para in enumerate(paras):
-        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
-        p.alignment = ALIGN[align]
-        p.line_spacing = spacing
-        if space_after:
-            p.space_after = Pt(space_after)
-        for j, seg in enumerate(para.split("**")):
-            if not seg:
-                continue
-            r = p.add_run()
-            r.text = seg
-            r.font.size = Pt(size)
-            r.font.bold = bold or (j % 2 == 1)
-            r.font.color.rgb = em if j % 2 == 1 else color
-            _set_font(r, font)
-        p._p.get_or_add_endParaRPr().set("sz", str(size * 100))
-    return box
-
-
-def shape(slide, kind, x, y, w, h, fill=None, line=None, line_w=1.5):
-    s = slide.shapes.add_shape(kind, Inches(x), Inches(y), Inches(w), Inches(h))
-    if fill is None:
-        s.fill.background()
-    else:
-        s.fill.solid()
-        s.fill.fore_color.rgb = fill
-    if line is None:
-        s.line.fill.background()
-    else:
-        s.line.color.rgb = line
-        s.line.width = Pt(line_w)
-    s.shadow.inherit = False
-    if kind == MSO_SHAPE.ROUNDED_RECTANGLE:
-        s.adjustments[0] = 0.12
-    return s
-
-
-def rect(slide, x, y, w, h, fill=None, line=None, line_w=1.5):
-    return shape(slide, MSO_SHAPE.RECTANGLE, x, y, w, h, fill, line, line_w)
-
-
-def rrect(slide, x, y, w, h, fill=None, line=None, line_w=1.5):
-    return shape(slide, MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h, fill, line, line_w)
-
-
-def seal(slide, x, y, size, char, fill=RED, color=GOLD, border=GOLD):
-    rect(slide, x, y, size, size, fill=fill, line=border, line_w=2.5)
-    inset = size * 0.08
-    rect(slide, x + inset, y + inset, size - 2 * inset, size - 2 * inset,
-         line=border, line_w=1)
-    text(slide, x, y, size, size, char, size=max(MIN_PT, int(size * 72 * 0.55)),
-         color=color, bold=True, font=KAI, align="c", anchor="m", spacing=1.0)
-
-
-def arrow(slide, x, y, w=0.9, h=0.6, color=GOLD):
-    shape(slide, MSO_SHAPE.RIGHT_ARROW, x, y, w, h, fill=color)
-
-
-def bg(slide, color):
-    slide.background.fill.solid()
-    slide.background.fill.fore_color.rgb = color
-
-
-def new_slide(title, minutes, notes):
-    slide = prs.slides.add_slide(BLANK)
-    SLIDES.append((title, minutes, notes))
-    tf = slide.notes_slide.notes_text_frame
-    tf.text = f"【建议用时：约 {minutes} 分钟】\n{notes}"
-    for p in tf.paragraphs:
-        for r in p.runs:
-            r.font.size = Pt(MIN_PT)
-            _set_font(r, SANS)
-    return slide
-
-
-def page_no(slide, color=GOLD):
-    n = len(prs.slides)
-    text(slide, 11.4, 6.85, 1.5, 0.5, f"{n:02d}", size=20, color=color, align="r")
-
-
-def content_slide(title, label, minutes, notes):
-    s = new_slide(title, minutes, notes)
-    bg(s, CREAM)
-    rect(s, 0, 0, 0.22, 7.5, fill=RED)
-    rect(s, 0.22, 0, 0.06, 7.5, fill=GOLD)
-    if label:
-        text(s, 0.9, 0.42, 9, 0.45, label, size=20, color=GOLD, bold=True)
-    text(s, 0.9, 0.82, 11.6, 0.85, title, size=36, color=DEEP_RED, bold=True)
-    rect(s, 0.9, 1.72, 1.2, 0.06, fill=GOLD)
-    page_no(s)
-    return s
+OUT_PPTX = HERE / "《望山河》读书分享（30分钟版）.pptx"
+OUT_SCRIPT = HERE / "讲稿（30分钟版）.md"
+SHADE_RED = (70, 10, 10)
 
 
 def think_box(s, y, content):
@@ -163,17 +16,18 @@ def think_box(s, y, content):
     text(s, 1.2, y, 11.0, 0.9, f"**想一想：**{content}", size=24, anchor="m")
 
 
-def divider(no, char, name, sub, author, minutes, notes):
+def divider(no, char, name, sub, author, minutes, notes, img, focus=(0.5, 0.5)):
     s = new_slide(f"{no}：{name}", minutes, notes)
     bg(s, RED)
-    rect(s, 0, 0.45, 13.333, 0.04, fill=GOLD)
-    rect(s, 0, 7.01, 13.333, 0.04, fill=GOLD)
-    seal(s, 1.7, 1.9, 3.4, char, fill=DEEP_RED)
-    text(s, 5.9, 1.95, 7, 0.6, no, size=28, color=GOLD, bold=True)
-    text(s, 5.9, 2.6, 7, 1.3, name, size=66, color=WHITE, bold=True)
-    text(s, 5.9, 4.0, 7, 0.65, sub, size=30, color=PALE)
-    text(s, 5.9, 4.75, 7, 0.55, author, size=24, color=WHITE)
-    page_no(s)
+    photo(s, img, 0, 0, 6.8, 7.5, focus=focus, shade=("right", (158, 27, 27), 0, 1.0, 0.35))
+    rect(s, 6.5, 0.45, 6.833, 0.04, fill=GOLD)
+    rect(s, 6.5, 7.01, 6.833, 0.04, fill=GOLD)
+    seal(s, 7.0, 1.0, 1.0, char, fill=DEEP_RED)
+    text(s, 7.0, 2.2, 6, 0.6, no, size=28, color=GOLD, bold=True)
+    text(s, 7.0, 2.85, 6, 1.3, name, size=66, color=WHITE, bold=True)
+    text(s, 7.0, 4.25, 6, 0.65, sub, size=30, color=PALE)
+    text(s, 7.0, 5.0, 6, 0.55, author, size=24, color=WHITE)
+    page_no(s, PALE)
     return s
 
 
@@ -193,16 +47,17 @@ s = new_slide("封面", 0.5,
               "各位老师、同学们，大家好！我是学生科党支部书记周央红。今天和大家分享的书叫《望山河》，"
               "我的分享题目是《一栋楼、一幢房、一只船》。接下来大约三十分钟，我们一起读书、一起回望。")
 bg(s, RED)
-rect(s, 0, 0.45, 13.333, 0.04, fill=GOLD)
-rect(s, 0, 7.01, 13.333, 0.04, fill=GOLD)
-rrect(s, 5.4, 0.95, 2.53, 0.62, line=GOLD, line_w=1.5)
-text(s, 5.4, 0.95, 2.53, 0.62, "读书分享会", size=24, color=GOLD, align="c", anchor="m")
-text(s, 0.5, 1.85, 12.333, 1.2, "一栋楼、一幢房、一只船", size=60, color=WHITE,
+rect(s, 0, 0, 13.333, 4.25, fill=GOLD)
+for i, (name, label, focus) in enumerate([("honglou", "一栋楼 · 北大红楼", (0.5, 0.6)),
+                                          ("yida", "一幢房 · 上海石库门", (0.5, 0.7)),
+                                          ("hongchuan", "一只船 · 南湖红船", (0.42, 0.6))]):
+    x = i * 4.45
+    photo(s, name, x, 0, 4.433, 4.2, focus=focus, shade=("bottom", SHADE_RED, 0, 0.85, 0.45))
+    text(s, x, 3.45, 4.433, 0.6, label, size=22, color=WHITE, bold=True, align="c", anchor="m")
+text(s, 0.5, 4.4, 12.333, 1.05, "一栋楼、一幢房、一只船", size=56, color=WHITE,
      bold=True, align="c", anchor="m")
-text(s, 0.5, 3.1, 12.333, 0.7, "——《望山河》前三篇读书分享", size=32, color=GOLD, align="c")
-for i, ch in enumerate("楼房船"):
-    seal(s, 4.92 + i * 1.32, 4.15, 1.0, ch, fill=DEEP_RED)
-text(s, 0.5, 5.6, 12.333, 0.6, "分享人：周央红（学生科党支部书记）", size=24,
+text(s, 0.5, 5.45, 12.333, 0.65, "——《望山河》前三篇读书分享", size=30, color=GOLD, align="c")
+text(s, 0.5, 6.25, 12.333, 0.6, "分享人：周央红（学生科党支部书记）", size=24,
      color=WHITE, align="c")
 
 # ---------------------------------------------------------------- 2 开场一问
@@ -214,13 +69,13 @@ s = content_slide("开场一问", None, 1.5,
 text(s, 0.9, 2.05, 11.5, 2.3,
      "如果让你用**一个物件**\n来代表中国共产党的起点，\n你会想到什么？",
      size=40, color=INK, bold=True, spacing=1.15)
-for i, (ch, a, b) in enumerate([("楼", "一栋楼", "北大红楼"),
-                                ("房", "一幢房", "上海石库门"),
-                                ("船", "一只船", "南湖红船")]):
+for i, (name, a, b, focus) in enumerate([("honglou", "一栋楼", "北大红楼", (0.5, 0.55)),
+                                         ("yida", "一幢房", "上海石库门", (0.5, 0.65)),
+                                         ("hongchuan", "一只船", "南湖红船", (0.4, 0.6))]):
     x = 0.9 + i * 3.95
-    seal(s, x, 4.75, 1.3, ch)
-    text(s, x + 1.5, 4.8, 2.4, 0.6, a, size=28, color=DEEP_RED, bold=True)
-    text(s, x + 1.5, 5.4, 2.4, 0.55, b, size=22, color=GRAY)
+    photo(s, name, x, 4.45, 3.6, 2.25, focus=focus, shade=("left", SHADE_RED, 0, 0.88, 0.7))
+    text(s, x + 0.25, 4.75, 3.0, 0.75, a, size=30, color=WHITE, bold=True)
+    text(s, x + 0.25, 5.5, 3.0, 0.5, b, size=22, color=PALE)
 
 # ---------------------------------------------------------------- 3 认识这本书
 s = content_slide("认识这本书：《望山河》", None, 1,
@@ -287,7 +142,7 @@ for i, (a, b) in enumerate(steps):
 
 # ================================================================= 第一节
 divider("第一节", "楼", "一栋楼", "北大红楼 · 思想的准备", "李舫 / 文", 0.3,
-        "第一节，一栋楼——北大红楼。这一篇的作者是李舫。")
+        "第一节，一栋楼——北大红楼。这一篇的作者是李舫。", "honglou", (0.42, 0.5))
 
 # ---------------------------------------------------------------- 7 红楼档案
 s = content_slide("红楼：一座楼里的思想火种", "第一节 · 一栋楼", 1.2,
@@ -305,9 +160,11 @@ for i, (k, v) in enumerate(facts):
     rrect(s, 0.9, y + 0.12, 1.75, 0.68, fill=RED)
     text(s, 0.9, y + 0.12, 1.75, 0.68, k, size=24, color=WHITE, bold=True,
          align="c", anchor="m")
-    text(s, 2.9, y, 9.5, 0.92, v, size=24, anchor="m")
+    text(s, 2.9, y, 5.5, 0.92, v, size=24, anchor="m", spacing=1.1)
     if i < 2:
-        rect(s, 2.9, y + 1.06, 9.5, 0.02, fill=GOLD)
+        rect(s, 2.9, y + 1.06, 5.5, 0.02, fill=GOLD)
+photo(s, "honglou", 8.75, 2.85, 3.65, 3.5, focus=(0.45, 0.6), frame=GOLD)
+text(s, 8.75, 6.38, 3.65, 0.45, "北大红楼", size=20, color=GRAY, align="c")
 
 # ---------------------------------------------------------------- 8 图书馆助理员
 s = content_slide("一位不起眼的图书馆助理员", "第一节 · 一栋楼", 1.2,
@@ -333,11 +190,12 @@ s = content_slide("他后来这样回忆", "第一节 · 一栋楼", 1.2,
                   "没有时间听一个图书馆助理员说南方话。”这段话出自斯诺的《西行漫记》。"
                   "说这话的青年助理员，就是毛泽东。（停顿）\n"
                   "一个后来带领中国人民站起来的人，当年在这栋楼里，是一个“大家都不理”的小职员。")
-text(s, 0.9, 1.95, 1.0, 1.0, "“", size=80, color=GOLD, bold=True, font=KAI)
-text(s, 1.6, 2.15, 10.6, 2.2,
+photo(s, "mao_1919", 0.9, 2.0, 2.65, 3.1, focus=(0.5, 0.3), frame=GOLD)
+text(s, 3.85, 1.95, 1.0, 1.0, "“", size=80, color=GOLD, bold=True, font=KAI)
+text(s, 4.5, 2.1, 7.9, 2.3,
      "我的职位低微，大家都不理我……他们都是些大忙人，没有时间听一个图书馆助理员说南方话。",
-     size=32, color=INK, font=KAI, spacing=1.3, anchor="m")
-text(s, 4.4, 4.4, 8.0, 0.55, "——摘自埃德加·斯诺《西行漫记》", size=22,
+     size=32, color=INK, font=KAI, spacing=1.25, anchor="m")
+text(s, 4.4, 4.45, 8.0, 0.55, "——摘自埃德加·斯诺《西行漫记》", size=22,
      color=GRAY, align="r")
 rect(s, 0.9, 5.35, 11.5, 1.05, fill=RED)
 text(s, 0.9, 5.35, 11.5, 1.05, "这位青年助理员，就是毛泽东。", size=32, color=WHITE,
@@ -395,7 +253,7 @@ for i, it in enumerate(items):
 
 # ================================================================= 第二节
 divider("第二节", "房", "一幢房", "上海石库门 · 组织的诞生", "张军锋 / 文", 0.3,
-        "第二节，一幢房——上海石库门。这一篇的作者是张军锋。")
+        "第二节，一幢房——上海石库门。这一篇的作者是张军锋。", "yida_door", (0.5, 0.5))
 
 # ---------------------------------------------------------------- 14 一组数字
 s = content_slide("1921年7月23日晚，望志路106号", "第二节 · 一幢房", 1.2,
@@ -404,26 +262,20 @@ s = content_slide("1921年7月23日晚，望志路106号", "第二节 · 一幢�
                   "他们代表着全国五十多名党员，平均年龄二十八岁，最小的才十九岁。\n"
                   "同学们，十九岁，和在座很多同学差不多大。就是这样一群年轻人，在这间小小的客厅里，"
                   "开了一个改变中国命运的会。")
-text(s, 0.9, 1.95, 11.5, 0.9,
-     "地点：上海法租界望志路106号（今兴业路76号）的一间客厅",
-     size=24, anchor="m")
+photo(s, "yida", 0.9, 1.95, 6.3, 3.15, focus=(0.5, 0.7), frame=GOLD)
+text(s, 7.5, 1.95, 4.9, 0.95, "上海法租界望志路106号\n（今兴业路76号）", size=24, spacing=1.1)
+photo(s, "no106", 7.5, 3.05, 2.3, 1.6, focus=(0.45, 0.5), frame=GOLD)
+text(s, 10.0, 3.0, 2.4, 1.7, "最小的代表才十九岁，**和在座很多同学差不多大**。", size=22,
+     anchor="m", spacing=1.1)
 nums = [("13", "位", "出席代表"), ("18", "㎡", "客厅面积"), ("50", "多名", "全国党员"),
         ("28", "岁", "平均年龄"), ("19", "岁", "最小代表")]
 for i, (n, unit, label) in enumerate(nums):
     x = 0.9 + i * 2.35
-    rrect(s, x, 3.05, 2.15, 2.3, fill=LIGHT_GOLD)
-    rect(s, x, 3.05, 2.15, 0.1, fill=RED)
-    box = text(s, x, 3.3, 2.15, 1.05, n, size=50, color=RED, bold=True,
-               align="c", anchor="m")
-    r = box.text_frame.paragraphs[0].add_run()
-    r.text = unit
-    r.font.size = Pt(24)
-    r.font.bold = True
-    r.font.color.rgb = RED
-    _set_font(r, SANS)
-    text(s, x, 4.5, 2.15, 0.55, label, size=22, align="c")
-text(s, 0.9, 5.7, 11.5, 0.9, "最小的代表才十九岁——**和在座很多同学差不多大**。",
-     size=26, align="c", anchor="m")
+    rrect(s, x, 5.3, 2.15, 1.4, fill=LIGHT_GOLD)
+    rect(s, x, 5.3, 2.15, 0.08, fill=RED)
+    box = text(s, x, 5.4, 2.15, 0.75, n, size=36, color=RED, bold=True, align="c", anchor="m")
+    add_run(box, unit, 20, RED, bold=True)
+    text(s, x, 6.12, 2.15, 0.45, label, size=20, align="c")
 
 # ---------------------------------------------------------------- 15 惊险一幕
 s = content_slide("会场被闯，会没有停", "第二节 · 一幢房", 1,
@@ -512,40 +364,46 @@ text(s, 0.9, 6.1, 11.5, 0.65,
 
 # ================================================================= 第三节
 divider("第三节", "船", "一只船", "南湖红船 · 扬帆的启航", "梁衡 / 文", 0.3,
-        "第三节，一只船——南湖红船。这一篇的作者是梁衡。")
+        "第三节，一只船——南湖红船。这一篇的作者是梁衡。", "hongchuan2", (0.45, 0.5))
 
 # ---------------------------------------------------------------- 21 梁衡
-s = content_slide("梁衡站在船边写下", "第三节 · 一只船", 1.2,
-                  "梁衡专程赶到嘉兴南湖，站在船边写下：“这是一只多么小的船啊，要低头弯腰才能进入舱内，"
+s = new_slide("梁衡站在船边写下", 1.2,
+              "梁衡专程赶到嘉兴南湖，站在船边写下：“这是一只多么小的船啊，要低头弯腰才能进入舱内，"
                   "刚能容下十几个人促膝侧坐。”他又问：“我真不敢想，我们轰轰烈烈、排山倒海的八十年"
                   "就是从这条船舱里倾泻出来的吗？”\n"
                   "一只要低头弯腰才能进去的小船，和一段轰轰烈烈的历史，这种反差，让人感慨。")
+bg(s, DEEP_RED)
+photo(s, "hongchuan", 0, 0, 13.333, 4.4, focus=(0.5, 0.55), shade=("bottom", (122, 18, 18), 0, 1.0, 0.4))
+text(s, 0.9, 3.55, 11.5, 0.45, "第三节 · 一只船", size=20, color=GOLD, bold=True)
+text(s, 0.9, 3.95, 11.5, 0.75, "梁衡站在船边写下", size=34, color=WHITE, bold=True)
 for i, q in enumerate(["这是一只多么小的船啊，要低头弯腰才能进入舱内，刚能容下十几个人促膝侧坐。",
                        "我真不敢想，我们轰轰烈烈、排山倒海的八十年就是从这条船舱里倾泻出来的吗？"]):
-    y = 2.05 + i * 1.75
-    rect(s, 0.9, y, 0.1, 1.45, fill=RED if i == 0 else GOLD)
-    text(s, 1.3, y, 11.1, 1.45, f"“{q}”", size=30, font=KAI, anchor="m", spacing=1.25)
-text(s, 0.9, 5.75, 11.5, 0.85, "一只要低头弯腰才能进去的小船，**承载起一段轰轰烈烈的历史**。",
-     size=26, align="c", anchor="m")
+    y = 4.8 + i * 1.0
+    rect(s, 0.9, y + 0.05, 0.08, 0.8, fill=GOLD)
+    text(s, 1.2, y, 11.2, 0.9, f"“{q}”", size=26, color=WHITE, font=KAI, anchor="m", spacing=1.1)
+page_no(s, PALE)
 
 # ---------------------------------------------------------------- 22 王会悟
 s = content_slide("船头放哨的人：王会悟", "第三节 · 一只船", 1.2,
                   "那么，会议是怎么转移到这条船上的？这就要说到一个人——王会悟。她是李达的夫人，嘉兴人，"
                   "熟悉当地情况，把会议转移到南湖就是她的提议。开会那天，她在船头放哨。下午，湖面上驶过一条汽艇，"
                   "她疑心是警情，赶紧发暗号，船舱里立刻响起一片麻将声。就这样，会议在船上继续进行，完成了全部议程。")
-steps = [("她是谁", "李达的夫人\n嘉兴人"),
-         ("她提议", "把会议转移到\n嘉兴南湖"),
+photo(s, "wanghuiwu", 0.9, 2.0, 2.6, 3.55, focus=(0.5, 0.15), frame=GOLD)
+text(s, 0.9, 5.6, 2.6, 0.5, "王会悟", size=22, color=DEEP_RED, bold=True, align="c")
+steps = [("她是谁", "李达的夫人，嘉兴人"),
+         ("她提议", "把会议转移到嘉兴南湖"),
          ("她放哨", "坐在船头\n留意湖面动静"),
          ("她发暗号", "汽艇驶过\n舱内响起麻将声")]
 for i, (a, b) in enumerate(steps):
-    x = 0.9 + i * 2.95
-    rrect(s, x, 2.1, 2.65, 2.9, fill=LIGHT_GOLD)
-    shape(s, MSO_SHAPE.OVAL, x + 0.97, 2.3, 0.7, 0.7, fill=RED)
-    text(s, x + 0.97, 2.3, 0.7, 0.7, str(i + 1), size=24, color=WHITE, bold=True,
+    x = 3.85 + (i % 2) * 4.35
+    y = 2.0 + (i // 2) * 1.75
+    rrect(s, x, y, 4.15, 1.55, fill=LIGHT_GOLD)
+    oval(s, x + 0.2, y + 0.2, 0.55, RED)
+    text(s, x + 0.2, y + 0.2, 0.55, 0.55, str(i + 1), size=22, color=WHITE, bold=True,
          align="c", anchor="m")
-    text(s, x, 3.1, 2.65, 0.6, a, size=26, color=RED, bold=True, align="c")
-    text(s, x, 3.8, 2.65, 1.1, b, size=22, align="c", spacing=1.15)
-text(s, 0.9, 5.4, 11.5, 0.9, "会议在船上继续进行，**完成了全部议程**。", size=28,
+    text(s, x + 0.9, y + 0.15, 3.1, 0.6, a, size=24, color=RED, bold=True, anchor="m")
+    text(s, x + 0.9, y + 0.75, 3.15, 0.75, b, size=22, spacing=1.0)
+text(s, 3.85, 5.6, 8.55, 0.8, "会议在船上继续进行，**完成了全部议程**。", size=28,
      align="c", anchor="m")
 
 # ---------------------------------------------------------------- 23 红船精神
@@ -674,37 +532,17 @@ s = content_slide("交流时间", None, 1,
                   "欢迎大家一起交流。谢谢大家！（交流环节可根据现场时间灵活掌握）")
 text(s, 0.9, 1.95, 11.5, 0.95, "这三个坐标里，**哪一个最触动你？**", size=40, color=INK,
      bold=True, align="c", anchor="m")
-for i, (ch, name) in enumerate([("楼", "北大红楼"), ("房", "上海石库门"), ("船", "南湖红船")]):
-    cx = 2.85 + i * 3.8
-    seal(s, cx - 0.7, 3.15, 1.4, ch)
-    text(s, cx - 1.6, 4.65, 3.2, 0.55, name, size=24, color=GRAY, align="c")
-text(s, 0.9, 5.45, 11.5, 0.9, "谢谢大家", size=44, color=DEEP_RED, bold=True,
+for i, (img, ch, name, focus) in enumerate([("honglou", "楼", "北大红楼", (0.5, 0.55)),
+                                            ("yida", "房", "上海石库门", (0.5, 0.65)),
+                                            ("hongchuan2", "船", "南湖红船", (0.5, 0.6))]):
+    x = 0.9 + i * 3.95
+    photo(s, img, x, 3.2, 3.6, 2.0, focus=focus, frame=GOLD)
+    seal(s, x - 0.15, 3.05, 0.7, ch)
+    text(s, x, 5.2, 3.6, 0.5, name, size=22, color=GRAY, align="c")
+text(s, 0.9, 5.7, 11.5, 0.75, "谢谢大家", size=40, color=DEEP_RED, bold=True,
      align="c", anchor="m")
-text(s, 0.9, 6.35, 11.5, 0.5, "分享人：周央红", size=22, color=GRAY, align="c")
+text(s, 0.9, 6.42, 11.5, 0.5, "分享人：周央红", size=22, color=GRAY, align="c")
 
 
-# ---------------------------------------------------------------- 检查与输出
-def check_min_font(pres):
-    bad = []
-    for idx, slide in enumerate(pres.slides, 1):
-        for shp in slide.shapes:
-            if not shp.has_text_frame:
-                continue
-            for p in shp.text_frame.paragraphs:
-                for r in p.runs:
-                    if r.text.strip() and (r.font.size is None or r.font.size.pt < MIN_PT):
-                        bad.append((idx, r.text, r.font.size))
-    return bad
-
-
-problems = check_min_font(prs)
-assert not problems, f"字号小于 {MIN_PT}pt 的文字: {problems}"
-prs.save(OUT_PPTX)
-
-total = sum(m for _, m, _ in SLIDES)
-lines = ["# 《望山河》前三篇读书分享 · 讲稿", "",
-         f"共 {len(SLIDES)} 页，建议总用时约 {total:.0f} 分钟（含两次简短互动）。", ""]
-for i, (title, minutes, notes) in enumerate(SLIDES, 1):
-    lines += [f"## 第 {i} 页 · {title}（约 {minutes} 分钟）", "", notes.replace("\n", "\n\n"), ""]
-OUT_SCRIPT.write_text("\n".join(lines), encoding="utf-8")
-print(f"saved {OUT_PPTX.name}: {len(SLIDES)} slides, ~{total:.1f} min")
+credits_slide()
+save(OUT_PPTX, OUT_SCRIPT, "《望山河》前三篇读书分享 · 讲稿（30 分钟版）", "（含两次简短互动）")
