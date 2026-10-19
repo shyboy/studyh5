@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  #stage { background: radial-gradient(circle at 70% 45%, #FFE9DF 0%, #FFC9B5 55%, #F7A88F 100%); }
+  .rays { position: absolute; left: 1380px; top: 520px; width: 3000px; height: 3000px; margin: -1500px 0 0 -1500px; border-radius: 50%;
+    background: repeating-conic-gradient(rgba(255,255,255,.22) 0 7deg, transparent 7deg 18deg); }
+  .pill { left: 110px; top: 110px; font-size: 44px; font-weight: 900; color: #fff; background: var(--ink); padding: 12px 34px; border-radius: 40px; letter-spacing: 3px; }
+  .t1, .t2 { left: 96px; font-family: var(--fun); font-size: 270px; line-height: 1; letter-spacing: 6px; white-space: nowrap; }
+  .t1 { top: 210px; color: var(--coral-d); text-shadow: 0 12px 0 rgba(140,47,47,.15); }
+  .t2 { top: 480px; color: var(--ink); text-shadow: 0 12px 0 rgba(58,53,80,.12); }
+  .sub { left: 104px; top: 790px; font-size: 64px; font-weight: 900; background: #fff; padding: 16px 40px; border-radius: 28px; box-shadow: 0 16px 34px rgba(58,53,80,.14); white-space: nowrap; }
+  .sub b { color: #fff; background: var(--mint); padding: 0 16px; border-radius: 14px; margin: 0 4px; }
+  .kid { left: 1190px; top: 230px; width: 600px; transform: rotate(-3deg); }
+  .stamp { left: 1180px; top: 760px; padding: 6px 40px; border: 12px solid var(--red); border-radius: 26px; color: var(--red); font-family: var(--fun); font-size: 110px; transform: rotate(-8deg); background: rgba(255,246,236,.9); letter-spacing: 8px; }
+  .wah { left: 1000px; top: 300px; font-family: var(--fun); font-size: 120px; color: var(--coral-d); -webkit-text-stroke: 3px #fff; paint-order: stroke fill; transform: rotate(-10deg); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="rays"></div>
+  <div class="abs pill">情绪爆发期 · 育儿科普</div>
+  <div class="abs t1">越哄</div>
+  <div class="abs t2">越哭？</div>
+  <div class="abs sub">3个字接住她：<b>稳</b><b>陪</b><b>守</b></div>
+  <div class="abs wah">哇——</div>
+  <div class="abs kid" id="kid"></div>
+  <div class="abs stamp">哄错了！</div>
+</div>
+<script src="../lib/art.js"></script>
+<script>document.getElementById("kid").innerHTML = ART.kid("cry");</script>
+</body>
+</html>
