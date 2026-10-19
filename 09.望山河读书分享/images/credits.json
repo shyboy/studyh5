@@ -1,0 +1,68 @@
+{
+ "honglou": {
+  "desc": "北大红楼",
+  "artist": "N509FZ",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:PKU_Red_Building_(20220908152758).jpg"
+ },
+ "honglou_old": {
+  "desc": "早年的北大红楼",
+  "artist": "佚名",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Red_Building,_National_Peking_University,_1.jpg"
+ },
+ "mao_1919": {
+  "desc": "毛泽东（1919年）",
+  "artist": "佚名",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Mao_Zedong_1919.jpg"
+ },
+ "yida": {
+  "desc": "中共一大会址",
+  "artist": "ScareCriterion12",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E4%B8%AD%E5%85%B1%E4%B8%80%E5%A4%A7%E4%BC%9A%E5%9D%80%E6%AD%A3%E9%9D%A22021_(1).jpg"
+ },
+ "yida_street": {
+  "desc": "中共一大会址街景",
+  "artist": "N509FZ",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:Site_of_the_First_CPC_National_Congress_(20250610163708).jpg"
+ },
+ "no106": {
+  "desc": "望志路106号门牌",
+  "artist": "N509FZ",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:House_number_sign_of_106_Rue_Wantz_at_Site_of_the_First_CPC_National_Congress_(20250610163750).jpg"
+ },
+ "yida_door": {
+  "desc": "中共一大会址石库门",
+  "artist": "Can Pac Swire from Toronto, Canada",
+  "license": "CC BY-SA 2.0",
+  "page": "https://commons.wikimedia.org/wiki/File:First_Meeting_of_the_Chinese_Communists_(6042350475).jpg"
+ },
+ "hongchuan": {
+  "desc": "南湖红船",
+  "artist": "ScareCriterion12",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E5%98%89%E5%85%B4%E5%8D%97%E6%B9%96%E7%BA%A2%E8%88%B92021_(1).jpg"
+ },
+ "hongchuan2": {
+  "desc": "南湖红船（侧面）",
+  "artist": "钉钉",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E6%B5%99%E6%B1%9F%E5%98%89%E5%85%B4%E5%8D%97%E6%B9%96%E7%BA%A2%E8%88%B9.jpg"
+ },
+ "hongchuan_shore": {
+  "desc": "南湖岸边的红船",
+  "artist": "Siyuwj",
+  "license": "CC BY-SA 4.0",
+  "page": "https://commons.wikimedia.org/wiki/File:%E5%98%89%E5%85%B4%E5%8D%97%E6%B9%96%E7%BA%A2%E8%88%B9,_2021-10-30_03.jpg"
+ },
+ "wanghuiwu": {
+  "desc": "王会悟",
+  "artist": "佚名",
+  "license": "Public domain",
+  "page": "https://commons.wikimedia.org/wiki/File:Wang_Huiwu.jpg"
+ }
+}
