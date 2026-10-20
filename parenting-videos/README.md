@@ -20,7 +20,7 @@ python3 scripts/sheet.py meltdown                     # 预览静帧拼图
 for k in 0 1 2; do python3 scripts/render.py meltdown --part $k/3 & done; wait
 python3 scripts/render.py meltdown --concat 3         # 无声画面 -> build/meltdown/silent.mp4
 python3 scripts/audio.py meltdown                     # 配音版（烧录字幕）+ 无配音版（附 .srt）-> out/
-python3 scripts/cover.py meltdown                     # 封面 -> out/*_封面.jpg
+python3 scripts/cover.py meltdown                     # 封面 -> out/*_封面.jpg（16:9）和 *_封面_3x4.jpg（3:4）
 ```
 
 `src/<id>/script.json` 是台词、配乐和字幕高亮词；`src/<id>/index.html` 是画面。画面元素用 `W(段落id, "词")` 对齐到口播里某个词出现的时刻，所以改台词后重新跑 `tts.py`，画面会自动跟上新的配音时间。
