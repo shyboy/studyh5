@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  /* ---------- hook ---------- */
+  .hook-bg { background: radial-gradient(circle at 68% 45%, #FFE9DF 0%, #FFC9B5 55%, #F7A88F 100%); }
+  .rays { position: absolute; left: 1300px; top: 480px; width: 3000px; height: 3000px; margin: -1500px 0 0 -1500px;
+    background: repeating-conic-gradient(rgba(255,255,255,.22) 0 7deg, transparent 7deg 18deg); border-radius: 50%; }
+  .hook-pill { left: 120px; top: 150px; font-size: 38px; font-weight: 900; color: #fff; background: var(--ink); padding: 12px 30px; border-radius: 40px; letter-spacing: 2px; }
+  .hook-l1, .hook-l2 { left: 104px; font-family: var(--fun); font-size: 250px; line-height: 1; letter-spacing: 6px; transform-origin: left center; white-space: nowrap; }
+  .hook-l1 { top: 250px; color: var(--coral-d); text-shadow: 0 10px 0 rgba(140,47,47,.15); }
+  .hook-l2 { top: 500px; color: var(--ink); text-shadow: 0 10px 0 rgba(58,53,80,.12); }
+  .hook-sub { left: 112px; top: 785px; font-size: 64px; font-weight: 900; white-space: nowrap; background: rgba(255,255,255,.88); padding: 10px 30px; border-radius: 24px; }
+  .wah { left: 890px; top: 330px; font-family: var(--fun); font-size: 110px; color: var(--coral-d); -webkit-text-stroke: 3px #fff; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(255,255,255,.7); }
+  .hook-sub s { text-decoration: none; position: relative; color: var(--muted); }
+  .hook-sub s::after { content: ""; position: absolute; left: -6px; right: -6px; top: 52%; height: 8px; background: var(--red); border-radius: 4px; transform-origin: left; transform: scaleX(var(--p,0)); }
+  .hook-sub b { color: var(--coral-d); }
+  .hook-kid { left: 1150px; top: 210px; width: 560px; transform-origin: 50% 90%; }
+  .bubble { position: absolute; background: #fff; border-radius: 40px; padding: 18px 34px; font-size: 44px; font-weight: 900; white-space: nowrap;
+    box-shadow: 0 14px 30px rgba(58,53,80,.16); color: var(--ink); }
+  .bubble::after { content: ""; position: absolute; bottom: -18px; left: 46px; border: 14px solid transparent; border-top: 20px solid #fff; border-bottom: 0; }
+  .bubble.r::after { left: auto; right: 46px; }
+  .meter { left: 1770px; top: 230px; width: 56px; height: 560px; border-radius: 30px; background: rgba(255,255,255,.7); overflow: hidden; box-shadow: inset 0 0 0 5px #fff; }
+  .meter i { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; background: linear-gradient(to top, #FFC857, #F2836B 55%, #E5484D); transform-origin: bottom; transform: scaleY(0); }
+  .meter-label { left: 1730px; top: 810px; width: 140px; text-align: center; font-size: 30px; font-weight: 900; color: var(--coral-d); }
+  .stamp { left: 860px; top: 560px; width: 640px; height: 220px; --rot: -10deg; border: 14px solid var(--red); border-radius: 30px; color: var(--red);
+    font-family: var(--fun); font-size: 150px; display: flex; align-items: center; justify-content: center; background: rgba(255,246,236,.82); letter-spacing: 10px; }
+
+  /* ---------- ask ---------- */
+  .post { left: 110px; top: 120px; width: 1130px; padding: 50px 64px; }
+  .post .head { display: flex; align-items: center; gap: 24px; margin-bottom: 28px; }
+  .post .ava { width: 100px; height: 100px; border-radius: 50%; background: #FFE3D6; overflow: hidden; }
+  .post .ava svg { width: 100px; margin-top: 6px; }
+  .post .name { font-size: 40px; font-weight: 900; }
+  .post .meta { font-size: 26px; color: var(--muted); margin-top: 4px; }
+  .post .body { font-size: 50px; line-height: 1.72; font-weight: 500; position: relative; z-index: 0; }
+  .post .body .mark { font-weight: 900; }
+  .tag { position: absolute; font-size: 40px; font-weight: 900; color: var(--coral-d); background: #fff; padding: 14px 30px; border-radius: 999px; box-shadow: 0 12px 26px rgba(58,53,80,.12); }
+  .books { left: 1320px; top: 400px; width: 500px; height: 460px; }
+  .book { position: absolute; left: 50%; height: 66px; border-radius: 12px; color: #fff; font-size: 30px; font-weight: 900; display: flex; align-items: center; justify-content: center; letter-spacing: 3px; box-shadow: inset 0 -6px 0 rgba(0,0,0,.12); }
+  .qmark { left: 1640px; top: 250px; width: 180px; height: 180px; border-radius: 50%; background: var(--coral); color: #fff; font-family: var(--fun); font-size: 140px; }
+
+  /* ---------- plan ---------- */
+  .plan-title { left: 0; right: 0; top: 120px; text-align: center; font-family: var(--fun); font-size: 88px; }
+  .plan-cards { left: 130px; right: 130px; top: 290px; display: flex; gap: 40px; }
+  .pcard { flex: 1; height: 500px; padding: 40px 30px; text-align: center; position: relative; }
+  .pcard .n { font-family: var(--fun); font-size: 46px; color: #fff; width: 86px; height: 86px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+  .pcard .ico { font-size: 120px; margin: 34px 0 20px; line-height: 1; }
+  .pcard .t { font-size: 46px; font-weight: 900; line-height: 1.35; }
+  .plan-ribbon { left: 0; right: 0; top: 830px; text-align: center; }
+  .plan-ribbon span { font-size: 44px; font-weight: 900; background: var(--ink); color: #fff; padding: 16px 44px; border-radius: 999px; }
+
+  /* ---------- chapter cards ---------- */
+  .chap { color: #fff; }
+  .chap .big { position: absolute; right: 90px; top: 40px; font-family: var(--fun); font-size: 640px; line-height: 1; color: rgba(255,255,255,.16); }
+  .chap .step { position: absolute; left: 150px; top: 290px; font-size: 56px; font-weight: 900; letter-spacing: 8px; background: rgba(255,255,255,.22); padding: 10px 34px; border-radius: 999px; }
+  .chap .title { position: absolute; left: 150px; top: 410px; font-family: var(--fun); font-size: 112px; line-height: 1.25; white-space: nowrap; text-shadow: 0 8px 0 rgba(0,0,0,.08); }
+  .chap .trio { position: absolute; left: 150px; top: 690px; display: flex; gap: 40px; }
+  .chap .trio div { width: 170px; height: 170px; border-radius: 50%; background: #fff; color: var(--mint-d); font-family: var(--fun); font-size: 110px; display: flex; align-items: center; justify-content: center; box-shadow: 0 16px 30px rgba(0,0,0,.12); }
+
+  /* ---------- peak ---------- */
+  .chart { left: 110px; top: 150px; width: 940px; height: 700px; padding: 40px; }
+  .chart h3 { margin: 0 0 10px 10px; font-size: 44px; font-weight: 900; }
+  .chart .note { position: absolute; right: 40px; top: 50px; font-size: 26px; color: var(--muted); }
+  .facts { left: 1130px; top: 170px; width: 700px; display: flex; flex-direction: column; gap: 26px; }
+  .fact { font-size: 50px; font-weight: 900; padding: 26px 36px; display: flex; align-items: center; gap: 22px; }
+  .fact .ic { width: 70px; height: 70px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 44px; flex: none; }
+  .tape { height: 150px; border-radius: 24px; font-family: var(--fun); font-size: 76px; display: flex; align-items: center; justify-content: center; color: var(--ink);
+    background: repeating-linear-gradient(-45deg, #FFC857 0 40px, #FFD98A 40px 80px); box-shadow: 0 14px 30px rgba(58,53,80,.15); }
+
+  /* ---------- house ---------- */
+  .house { left: 140px; top: 104px; width: 820px; height: 800px; }
+  .roof { position: absolute; left: 0; top: 0; width: 820px; height: 210px; background: var(--coral-d); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .chimney { position: absolute; left: 600px; top: 40px; width: 60px; height: 110px; background: #B74C38; }
+  .room { position: absolute; left: 40px; width: 740px; border: 12px solid #E3A987; overflow: hidden; }
+  .room.up { top: 200px; height: 280px; background: #FFF3CF; }
+  .room.down { top: 500px; height: 290px; background: #FFE2D3; }
+  .slab { position: absolute; left: 30px; width: 760px; top: 476px; height: 30px; background: #C98B6B; border-radius: 6px; }
+  .rtag { position: absolute; left: 70px; font-size: 30px; font-weight: 900; color: #fff; padding: 8px 20px; border-radius: 999px; z-index: 3; }
+  .stairs { position: absolute; left: 560px; top: 470px; width: 210px; height: 310px; z-index: 2; }
+  .h-butler { position: absolute; left: 250px; top: 236px; width: 210px; z-index: 2; }
+  .h-monster { position: absolute; left: 230px; top: 530px; width: 250px; z-index: 2; transform-origin: 50% 90%; }
+  .h-monster svg { position: absolute; left: 0; top: 0; width: 250px; }
+  .echip { position: absolute; font-size: 32px; font-weight: 900; background: #fff; padding: 8px 22px; border-radius: 999px; box-shadow: 0 8px 18px rgba(58,53,80,.12); z-index: 4; }
+  .scaffold { position: absolute; left: 52px; top: 212px; width: 716px; height: 256px; z-index: 3;
+    background: repeating-linear-gradient(45deg, rgba(255,200,87,.0) 0 26px, rgba(255,200,87,.38) 26px 40px); border: 6px dashed rgba(201,139,107,.7); }
+  .updim { position: absolute; left: 52px; top: 212px; width: 716px; height: 256px; background: rgba(36,32,58,.62); z-index: 5; }
+  .downflash { position: absolute; left: 52px; top: 512px; width: 716px; height: 266px; background: #FF4D4D; z-index: 1; opacity: 0; }
+  .alarm { position: absolute; left: 380px; top: 506px; width: 90px; height: 70px; z-index: 6; }
+  .barrier { position: absolute; left: 556px; top: 600px; width: 250px; height: 54px; border-radius: 12px; z-index: 6; --rot: -40deg;
+    background: repeating-linear-gradient(90deg, #E5484D 0 34px, #fff 34px 68px); box-shadow: 0 8px 18px rgba(0,0,0,.25); border: 5px solid #fff; }
+  .qq { position: absolute; left: 470px; top: 240px; font-family: var(--fun); font-size: 90px; color: #FFC857; z-index: 6; }
+  .side { left: 1050px; top: 150px; width: 780px; }
+  .side .h { font-family: var(--fun); font-size: 76px; margin-bottom: 30px; }
+  .sline { font-size: 46px; font-weight: 900; padding: 24px 32px; margin-bottom: 22px; display: flex; align-items: center; gap: 20px; }
+  .sline .e { font-size: 54px; }
+  .bar25 { padding: 34px 40px 60px; }
+  .bar25 .lbl { font-size: 36px; font-weight: 900; margin-bottom: 84px; }
+  .bar25 .track { position: relative; height: 40px; border-radius: 20px; background: #EEE7F3; }
+  .bar25 .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 12%; border-radius: 20px; background: var(--sky); transform-origin: left; }
+  .bar25 .ends { display: flex; justify-content: space-between; font-size: 30px; color: var(--muted); margin-top: 12px; font-weight: 700; }
+  .bar25 .pin { position: absolute; left: 12%; top: -76px; transform: translateX(-50%); font-size: 28px; font-weight: 900; color: #fff; background: var(--coral); padding: 6px 16px; border-radius: 12px; white-space: nowrap; }
+  .alertcard { border: 8px solid var(--red); }
+
+  /* ---------- brake ---------- */
+  .brake-title { left: 0; right: 0; top: 130px; text-align: center; font-size: 84px; font-weight: 900; }
+  .brake-title s { text-decoration: none; position: relative; color: var(--muted); }
+  .brake-title s::after { content: ""; position: absolute; left: -8px; right: -8px; top: 52%; height: 10px; background: var(--red); border-radius: 5px; transform-origin: left; transform: scaleX(var(--p,0)); }
+  .pedal-box { position: absolute; top: 330px; width: 600px; height: 520px; text-align: center; }
+  .pedal { position: absolute; left: 50%; bottom: 120px; transform-origin: 50% 100%; border-radius: 30px; }
+  .pedal-lbl { position: absolute; left: 0; right: 0; bottom: 20px; font-size: 52px; font-weight: 900; }
+  .pedal-note { position: absolute; left: 0; right: 0; top: -66px; font-size: 40px; font-weight: 900; }
+
+  /* ---------- traps (sidebar layout) ---------- */
+  .sidebar { left: 70px; top: 130px; width: 470px; display: flex; flex-direction: column; gap: 18px; }
+  .sitem { height: 108px; border-radius: 28px; background: #fff; display: flex; align-items: center; gap: 18px; padding: 0 26px; font-size: 36px; font-weight: 900; color: var(--muted);
+    box-shadow: 0 10px 24px rgba(58,53,80,.08); position: relative; }
+  .sitem .no { width: 60px; height: 60px; border-radius: 50%; background: #EEE7F3; color: var(--muted); display: flex; align-items: center; justify-content: center; font-size: 30px; flex: none; }
+  .sitem .on { position: absolute; inset: 0; border-radius: 28px; background: var(--coral); color: #fff; display: flex; align-items: center; gap: 18px; padding: 0 26px; opacity: 0; }
+  .sitem .on .no { background: #fff; color: var(--coral); }
+  .sitem .done { position: absolute; right: 26px; font-size: 40px; color: var(--mint); opacity: 0; }
+  .panel { position: absolute; left: 600px; top: 120px; width: 1250px; height: 790px; }
+  .ptitle { position: absolute; left: 40px; top: 10px; font-family: var(--fun); font-size: 76px; white-space: nowrap; }
+  .pcap { position: absolute; left: 40px; right: 40px; top: 690px; text-align: center; font-size: 46px; font-weight: 900; }
+  .pcap span { background: var(--ink); color: #fff; padding: 12px 36px; border-radius: 999px; }
+
+  /* ---------- 稳陪守 ---------- */
+  .tabs { left: 0; right: 0; top: 110px; display: flex; justify-content: center; gap: 26px; }
+  .tabs div { width: 110px; height: 110px; border-radius: 50%; font-family: var(--fun); font-size: 70px; display: flex; align-items: center; justify-content: center; background: #fff; color: #C9C3D6; box-shadow: 0 10px 24px rgba(58,53,80,.08); position: relative; }
+  .tabs div b { position: absolute; inset: 0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 400; opacity: 0; }
+  .bigchar { position: absolute; left: 110px; top: 290px; width: 360px; height: 360px; border-radius: 50%; color: #fff; font-family: var(--fun); font-size: 250px; display: flex; align-items: center; justify-content: center; box-shadow: 0 24px 50px rgba(58,53,80,.18); }
+  .bigchar small { position: absolute; bottom: -100px; left: -40px; right: -40px; text-align: center; font-family: var(--sans); font-weight: 900; font-size: 48px; color: var(--ink); white-space: nowrap; }
+  .quote { position: absolute; left: 560px; right: 110px; top: 720px; font-family: var(--hand); font-size: 58px; text-align: center; padding: 26px 30px; }
+  .quote b { color: var(--coral-d); }
+
+  /* ---------- swap ---------- */
+  .swap-title { left: 0; right: 0; top: 116px; text-align: center; font-family: var(--fun); font-size: 84px; }
+  .srow { position: absolute; left: 150px; right: 150px; height: 170px; display: flex; align-items: center; gap: 40px; }
+  .scard { flex: none; height: 150px; border-radius: 30px; display: flex; align-items: center; gap: 22px; padding: 0 40px; font-size: 52px; font-weight: 900; white-space: nowrap; }
+  .scard.no { width: 640px; background: #FFE4E1; color: #B83A3A; }
+  .scard.no span { text-decoration: line-through; text-decoration-thickness: 5px; text-decoration-color: rgba(184,58,58,.6); }
+  .scard.yes { width: 800px; background: #DDF3EE; color: #1F6F64; box-shadow: 0 14px 30px rgba(47,140,128,.18); }
+  .scard .m { width: 70px; height: 70px; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 44px; flex: none; }
+  .arrow { width: 90px; font-size: 80px; color: var(--muted); text-align: center; flex: none; font-weight: 900; }
+
+  /* ---------- after ---------- */
+  .steps { left: 940px; top: 170px; width: 900px; }
+  .stp { display: flex; align-items: center; gap: 28px; padding: 26px 34px; margin-bottom: 24px; font-size: 46px; font-weight: 900; }
+  .stp .n { width: 74px; height: 74px; border-radius: 50%; background: var(--mint); color: #fff; font-family: var(--fun); font-size: 46px; display: flex; align-items: center; justify-content: center; flex: none; }
+  .stp small { display: block; font-family: var(--hand); font-weight: 500; font-size: 38px; color: var(--muted); margin-top: 6px; }
+
+  /* ---------- night ---------- */
+  .night { background: linear-gradient(#26285A, #3D3B78 70%, #514A8C); color: #fff; }
+  .star { position: absolute; width: 8px; height: 8px; border-radius: 50%; background: #FFF6C9; }
+  .moon { position: absolute; right: 130px; top: 160px; width: 170px; height: 170px; border-radius: 50%; box-shadow: -38px 18px 0 0 #FFE7A0; }
+  .routine { left: 110px; right: 110px; top: 610px; display: flex; justify-content: space-between; align-items: center; }
+  .rstep { width: 250px; height: 220px; border-radius: 34px; background: rgba(255,255,255,.12); border: 3px solid rgba(255,255,255,.25); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; font-size: 44px; font-weight: 900; }
+  .rstep .e { font-size: 90px; line-height: 1; }
+  .rarrow { font-size: 54px; color: rgba(255,255,255,.5); }
+  .nbubble { position: absolute; left: 660px; top: 170px; background: #fff; color: var(--ink); font-family: var(--hand); font-size: 66px; padding: 30px 54px; border-radius: 50px; box-shadow: 0 20px 40px rgba(0,0,0,.25); white-space: nowrap; }
+  .nbubble::after { content: ""; position: absolute; left: -28px; top: 60px; border: 18px solid transparent; border-right: 34px solid #fff; border-left: 0; }
+
+  /* ---------- doctor ---------- */
+  .doc-card { left: 200px; right: 200px; top: 130px; height: 760px; padding: 50px 70px; border: 8px solid #FFC857; }
+  .doc-card h2 { margin: 0; font-family: var(--fun); font-weight: 400; font-size: 76px; }
+  .doc-card .where { font-size: 38px; font-weight: 700; color: var(--muted); margin: 10px 0 30px; }
+  .ditem { display: flex; align-items: center; gap: 26px; font-size: 50px; font-weight: 900; padding: 18px 0; border-top: 3px dashed #F0E6D8; }
+  .ditem .n { width: 66px; height: 66px; border-radius: 18px; background: #FFC857; display: flex; align-items: center; justify-content: center; font-family: var(--fun); font-size: 44px; flex: none; }
+  .disclaimer { position: absolute; left: 0; right: 0; top: 904px; text-align: center; font-size: 26px; color: var(--muted); }
+
+  /* ---------- ending ---------- */
+  .sunset { background: linear-gradient(160deg, #FFE8D2 0%, #FFD0B5 50%, #F9B5A0 100%); }
+  .endtext { left: 900px; top: 170px; width: 920px; font-family: var(--hand); font-size: 64px; line-height: 1.55; }
+  .endtext .ln { display: block; }
+  .endtext b { color: var(--coral-d); font-weight: 500; }
+  .sum { left: 0; right: 0; top: 140px; text-align: center; font-family: var(--hand); font-size: 96px; }
+  .sumrow { left: 0; right: 0; top: 330px; display: flex; justify-content: center; gap: 70px; }
+  .sumcard { width: 400px; padding: 40px 20px 36px; text-align: center; }
+  .sumcard .c { width: 170px; height: 170px; margin: 0 auto 24px; border-radius: 50%; color: #fff; font-family: var(--fun); font-size: 110px; display: flex; align-items: center; justify-content: center; }
+  .sumcard .d { font-size: 48px; font-weight: 900; }
+  .cta { left: 0; right: 0; top: 760px; text-align: center; }
+  .cta span { font-size: 46px; font-weight: 900; background: var(--coral); color: #fff; padding: 18px 50px; border-radius: 999px; box-shadow: 0 16px 30px rgba(217,97,74,.3); }
+  .refs { left: 0; right: 0; top: 880px; text-align: center; font-size: 22px; color: rgba(58,53,80,.55); }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<svg width="0" height="0" style="position:absolute"><defs></defs></svg>
+<script src="../lib/engine.js"></script>
+<script src="../lib/art.js"></script>
+<script>
+const { el, show, hide, anim, hook, sfx, S, End, W, prog, ease, clamp, stagger, TL } = E;
+const stage = document.getElementById("stage");
+
+/* ---------------------------------------------------------- helpers */
+const T0 = (id) => (id === "hook" ? 0 : S(id) - 0.3);
+function scene(from, to, cls = "", inType = "fade") {
+  const s = el("div", "scene " + cls);
+  const t0 = T0(from);
+  if (t0 > 0) show(s, t0, inType, 0.45);
+  if (to) hide(s, T0(to) + 0.5, "fade", 0.01);
+  return s;
+}
+function abs(cls, html, parent, style = {}) {
+  const e = el("div", "abs " + cls, html, parent);
+  Object.assign(e.style, style);
+  return e;
+}
+function bubble(text, x, y, parent, right = false) {
+  return abs("bubble" + (right ? " r" : ""), text, parent, { left: x + "px", top: y + "px" });
+}
+/* panel visible while segment `id` plays (until next id starts) */
+function panel(parent, id, nextId, type = "right") {
+  const p = el("div", "panel", "", parent);
+  show(p, S(id) - 0.25, type, 0.5);
+  if (nextId) hide(p, S(nextId) - 0.3, "fade", 0.3);
+  return p;
+}
+function markAt(elm, t, dur = 0.5) {
+  hook((tt) => elm.style.setProperty("--p", prog(tt, t, dur).toFixed(3)));
+}
+function shake(elm, t0, t1, amp = 3, freq = 9) {
+  hook((t) => {
+    const on = t >= t0 && t < t1 ? 1 : 0;
+    elm.style.transform = on ? `rotate(${Math.sin(t * freq * 6.283) * amp}deg)` : "";
+  });
+}
+/* all tears fall in a loop */
+hook((t) => {
+  document.querySelectorAll(".tear").forEach((d, i) => {
+    const ph = ((t * 1.5 + (d.classList.contains("t2") ? 0.5 : 0) + i * 0.13) % 1);
+    d.style.transform = `translateY(${ph * 70}px)`;
+    d.style.opacity = (1 - ph).toFixed(2);
+  });
+});
+
+/* ================================================================= 1. HOOK */
+{
+  const s = scene("hook", "ask", "hook-bg");
+  const rays = abs("rays", "", s);
+  hook((t) => (rays.style.transform = `rotate(${t * 6}deg)`));
+  const pill = abs("hook-pill", "情绪爆发期 · 育儿科普", s);
+  const l1 = abs("hook-l1", "越哄", s);
+  const l2 = abs("hook-l2", "越哭？", s);
+  anim(l1, [{ transform: "scale(1.18)", opacity: 1 }, { transform: "scale(1)", opacity: 1 }], 0, 0.35, { ease: "back" });
+  anim(l2, [{ transform: "scale(1.18)", opacity: 1 }, { transform: "scale(1)", opacity: 1 }], 0.12, 0.35, { ease: "back" });
+  anim(pill, [{ transform: "translateY(-14px)" }, { transform: "none" }], 0, 0.3);
+
+  const kidWrap = abs("hook-kid", ART.kid("cry"), s);
+  shake(kidWrap, 0, End("hook") + 0.4, 2.2, 7);
+  const wah = abs("wah", "哇——", s);
+  hook((t) => (wah.style.transform = `rotate(-10deg) scale(${(1 + 0.08 * Math.abs(Math.sin(t * 9))).toFixed(3)})`));
+
+  const meter = abs("meter", "<i></i>", s);
+  abs("meter-label", "哭声音量", s);
+  const lvl = meter.querySelector("i");
+  const B = [
+    ["不哭不哭～", 860, 170, 0.22],
+    ["乖，别哭了！", 1450, 120, 0.58],
+    ["你听妈妈说…", 830, 600, 0.94, ],
+    ["怎么又哭了？", 1430, 760, 1.3],
+    ["宝贝乖～", 1150, 40, 1.62],
+  ];
+  B.forEach(([txt, x, y, t], i) => {
+    const b = bubble(txt, x, y, s, i % 2 === 1);
+    show(b, t, "pop", 0.35, "back");
+    sfx(t, "pop", 0.8);
+  });
+  hook((t) => {
+    let v = 0.3;
+    B.forEach(([, , , bt]) => (v += 0.14 * prog(t, bt, 0.25)));
+    v += 0.05 * Math.sin(t * 22) * (t < 5 ? 1 : 0);
+    lvl.style.transform = `scaleY(${clamp(v, 0, 1).toFixed(3)})`;
+  });
+  const tStamp = W("hook", "不是");
+  const stamp = abs("stamp", "哄错了！", s);
+  show(stamp, tStamp - 0.08, "slam", 0.4);
+  sfx(tStamp - 0.02, "stamp", 1.1);
+  sfx(tStamp - 1.2, "riser", 1.4);
+
+  const sub = abs("hook-sub", "<s>不是你哄得不够</s>，<b>是方式错了</b>", s);
+  show(sub, tStamp - 0.1, "up", 0.4);
+  markAt(sub.querySelector("s"), W("hook", "而是") - 0.15, 0.35);
+  const bOK = sub.querySelector("b");
+  show(bOK, W("hook", "方式") - 0.1, "fade", 0.3);
+  sfx(0, "impact", 0.9);
+}
+
+/* ================================================================= 2. ASK */
+{
+  const s = scene("ask", "plan", "dots");
+  const post = abs("post card", `
+    <div class="head"><div class="ava">${ART.mom("anxious")}</div>
+      <div><div class="name">一位宝妈的提问</div><div class="meta">育儿交流 · 刚刚</div></div></div>
+    <div class="body">各位有经验的宝爸宝妈，孩子的情绪爆发期是怎么渡过的？现在<span class="mark m1">一言不合就崩溃大哭</span>，有时候晚上<span class="mark m2">睡觉姿势不对都要哭半天</span>。从小给她读了<span class="mark m3">很多情绪管理的书</span>，每次也努力安抚了，可是感觉<span class="mark m4">越安抚越容易崩溃</span>，怎么破局？</div>`, s);
+  show(post, S("ask") - 0.1, "up", 0.6);
+  markAt(post.querySelector(".m1"), W("ask", "一言不合"));
+  markAt(post.querySelector(".m2"), W("ask", "睡觉姿势"));
+  markAt(post.querySelector(".m3"), W("ask", "情绪管理的书"));
+  markAt(post.querySelector(".m4"), W("ask", "越安抚"));
+
+  const tags = [
+    ["#一言不合就哭", 1290, 170, W("ask", "一言不合")],
+    ["#睡前哭半天", 1330, 290, W("ask", "睡觉姿势")],
+  ];
+  tags.forEach(([txt, x, y, t]) => {
+    const g = abs("tag", txt, s, { left: x + "px", top: y + "px" });
+    show(g, t, "pop", 0.4, "back");
+    sfx(t, "pop", 0.6);
+  });
+  const books = abs("books", "", s);
+  const BK = [["情绪绘本", "#6C9CF0", 300], ["我的情绪小怪兽", "#F2836B", 340], ["生气汤", "#4FB3A6", 280], ["菲菲生气了", "#B9A5E8", 320], ["情绪管理", "#FFC857", 300], ["我不哭", "#FF9B8A", 260]];
+  const tb = W("ask", "情绪管理的书");
+  BK.forEach(([name, c, w], i) => {
+    const b = abs("book", name, books, { width: w + "px", marginLeft: -w / 2 + (i % 2 ? 12 : -10) + "px", top: 320 - i * 60 + "px", background: c });
+    show(b, tb + i * 0.13, [{ opacity: 0, transform: "translateY(-260px)" }, { opacity: 1, transform: "none" }], 0.4, "out");
+    sfx(tb + i * 0.13 + 0.3, "tap", 0.7);
+  });
+  const q = abs("qmark center", "?", s);
+  show(q, W("ask", "越安抚"), "pop", 0.45, "back");
+  sfx(W("ask", "越安抚"), "boing", 0.8);
+  hook((t) => (q.style.transform = t > W("ask", "越安抚") + 0.5 ? `rotate(${Math.sin(t * 3) * 8}deg)` : ""));
+}
+
+/* ================================================================= 3. PLAN */
+{
+  const s = scene("plan", "c1", "dots");
+  const ti = abs("plan-title", "今天讲透 <span style='color:var(--coral-d)'>4</span> 件事", s);
+  show(ti, S("plan"), "down", 0.5);
+  const wrap = abs("plan-cards", "", s);
+  const P = [
+    ["01", "🧠", "孩子为什么<br>会崩溃", "#6C9CF0", "孩子为什么会崩溃"],
+    ["02", "🌀", "为什么<br>越哄越糟", "#F2836B", "为什么越哄越糟"],
+    ["03", "🤗", "崩溃当下<br>怎么接", "#4FB3A6", "崩溃当下怎么接"],
+    ["04", "🌱", "平时<br>怎么预防", "#E9A93B", "平时怎么预防"],
+  ];
+  P.forEach(([n, ico, t, c, w]) => {
+    const card = el("div", "pcard card", `<div class="n" style="background:${c}">${n}</div><div class="ico">${ico}</div><div class="t">${t}</div>`, wrap);
+    const tt = W("plan", w);
+    show(card, tt - 0.1, "up", 0.5, "back");
+    sfx(tt - 0.05, "pop", 0.7);
+  });
+  const rb = abs("plan-ribbon", "<span>看完就知道 下一次该怎么做 ✓</span>", s);
+  show(rb, W("plan", "看完你就知道"), "up", 0.5);
+  sfx(W("plan", "看完你就知道"), "ding", 0.6);
+}
+
+/* ================================================================= chapter cards */
+function chapter(id, nextId, num, title, color, extra) {
+  const s = el("div", "scene chap", "", stage);
+  s.style.background = color;
+  const t0 = S(id) - 0.45;
+  anim(s, [{ clipPath: "circle(0% at 50% 50%)" }, { clipPath: "circle(75% at 50% 50%)" }], t0, 0.6, { ease: "inOut" });
+  hide(s, T0(nextId) + 0.5, "fade", 0.01);
+  sfx(t0, "whoosh", 0.9);
+  const big = abs("big", num, s);
+  show(big, t0 + 0.2, "zoom", 0.8);
+  show(abs("step", "第" + "一二三四"[+num - 1] + "步", s), t0 + 0.3, "left", 0.5);
+  show(abs("title", title, s), t0 + 0.45, "up", 0.6);
+  if (extra) extra(s, t0);
+  return s;
+}
+
+/* ================================================================= persistent top bar */
+const CH = [
+  ["c1", "c2", "为什么一点小事就崩溃"],
+  ["c2", "c3", "为什么越哄越糟"],
+  ["c3", "c4", "崩溃当下：稳 · 陪 · 守"],
+  ["c4", "end1", "平时：减少崩溃燃料"],
+];
+function topbar() {
+  const bar = el("div", "topbar", "", stage);
+  const tag = abs("chapter-tag", "<b>1</b><span></span>", bar);
+  const prog4 = abs("progress", CH.map(() => "<i><s></s></i>").join(""), bar);
+  const fills = prog4.querySelectorAll("s");
+  hook((t) => {
+    let k = -1;
+    CH.forEach(([a], i) => { if (t >= S(a) + 0.6) k = i; });
+    const inCard = CH.some(([a]) => t >= S(a) - 0.45 && t < End(a) + 0.5);
+    const vis = k >= 0 && t < T0("end1") && !inCard;
+    bar.style.opacity = vis ? 1 : 0;
+    if (k >= 0) {
+      tag.querySelector("b").textContent = k + 1;
+      tag.querySelector("span").textContent = CH[k][2];
+      tag.querySelector("b").style.background = ["#6C9CF0", "#F2836B", "#4FB3A6", "#E9A93B"][k];
+    }
+    fills.forEach((f, i) => {
+      const [a, b] = CH[i];
+      f.style.transform = `scaleX(${clamp((t - S(a)) / (S(b) - S(a))).toFixed(3)})`;
+      f.style.background = ["#6C9CF0", "#F2836B", "#4FB3A6", "#E9A93B"][i];
+    });
+  });
+}
+
+/* ================================================================= CHAPTER 1 */
+chapter("c1", "peak", "1", "孩子为什么<br>一点小事就崩溃？", "#6C9CF0");
+
+/* ---- peak */
+{
+  const s = scene("peak", "house1", "dots");
+  const chart = abs("chart card", `<h3>情绪爆发频率 <span style="font-size:30px;color:var(--muted);font-weight:700">（随年龄变化）</span></h3><div class="note">示意图</div>
+    <svg viewBox="0 0 860 560" width="860" height="560">
+      <rect class="band" x="200" y="20" width="300" height="440" rx="18" fill="#F2836B" fill-opacity=".16"/>
+      <text class="bandt" x="350" y="70" text-anchor="middle" font-size="40" font-weight="900" fill="#D9614A">2–4 岁 高峰期</text>
+      <line x1="50" y1="460" x2="840" y2="460" stroke="#3A3550" stroke-width="5" stroke-linecap="round"/>
+      <line x1="50" y1="460" x2="50" y2="20" stroke="#3A3550" stroke-width="5" stroke-linecap="round"/>
+      ${[1, 2, 3, 4, 5, 6].map((a, i) => `<text x="${50 + i * 150}" y="515" text-anchor="middle" font-size="34" font-weight="700" fill="#7B7590">${a}岁</text>`).join("")}
+      <path class="curve" d="M50 420 C 130 410, 170 160, 260 130 S 400 120, 470 170 S 640 380, 840 420" fill="none" stroke="#F2836B" stroke-width="12" stroke-linecap="round"/>
+    </svg>`, s);
+  show(chart, S("peak"), "up", 0.5);
+  const curve = chart.querySelector(".curve");
+  const L = curve.getTotalLength();
+  curve.style.strokeDasharray = L;
+  const tb = W("peak", "两到四岁");
+  hook((t) => (curve.style.strokeDashoffset = (L * (1 - prog(t, S("peak") + 0.3, 1.6, ease.inOut))).toFixed(1)));
+  show(chart.querySelector(".band"), tb, "fade", 0.4);
+  show(chart.querySelector(".bandt"), tb + 0.1, "fade", 0.4);
+  sfx(tb, "ding", 0.6);
+  const facts = abs("facts", "", s);
+  const F = [
+    ["✓", "#4FB3A6", "正常的发育阶段", W("peak", "高峰期")],
+    ["✗", "#E5484D", "不是被惯坏了", W("peak", "惯坏")],
+    ["✗", "#E5484D", "不是你没教好", W("peak", "没教好")],
+  ];
+  F.forEach(([ic, c, txt, t]) => {
+    const f = el("div", "fact card", `<span class="ic" style="background:${c}">${ic}</span>${txt}`, facts);
+    show(f, t - 0.1, "right", 0.5);
+    sfx(t, ic === "✓" ? "correct" : "blip", 0.5);
+  });
+  const tape = el("div", "tape", "🚧 大脑施工中", facts);
+  show(tape, W("peak", "施工中") - 0.15, "slam", 0.4);
+  sfx(W("peak", "施工中"), "stamp", 0.7);
+}
+
+/* ---- house (house1..house3) */
+{
+  const s = scene("house1", "brake", "dots");
+  const h = abs("house", `
+    <div class="roof"></div><div class="chimney"></div>
+    <div class="room up"></div><div class="room down"></div><div class="downflash"></div><div class="slab"></div>
+    <svg class="stairs" viewBox="0 0 210 310"><path d="M0 310 V270 H40 V230 H80 V190 H120 V150 H160 V110 H200 V0" fill="none" stroke="#C98B6B" stroke-width="14" stroke-linejoin="round"/>
+      <path d="M0 310 V270 H40 V230 H80 V190 H120 V150 H160 V110 H200 V310Z" fill="#E3B79C" opacity=".6"/></svg>
+    <div class="rtag" style="top:216px;background:#6C9CF0">楼上 · 理智脑</div>
+    <div class="rtag" style="top:516px;background:#F2836B">楼下 · 情绪脑</div>`, s);
+  show(h, S("house1") - 0.1, "up", 0.6);
+  sfx(S("house1"), "whoosh", 0.5);
+
+  // monster downstairs
+  const mon = abs("h-monster", ART.monster("calm") + ART.monster("angry"), h);
+  const [mCalm, mAngry] = mon.querySelectorAll("svg");
+  const tMon = W("house1", "情绪小怪兽");
+  show(mon, tMon - 0.1, "pop", 0.5, "back");
+  sfx(tMon, "boing", 0.8);
+  const tAlarm = W("house3", "警报");
+  mAngry.style.opacity = 0;
+  hook((t) => {
+    const a = t >= tAlarm ? 1 : 0;
+    mCalm.style.opacity = 1 - a;
+    mAngry.style.opacity = a;
+    const sc = 1 + 0.25 * prog(t, tAlarm, 0.4, ease.back);
+    const jig = a ? Math.sin(t * 40) * 3 : Math.sin(t * 2.4) * 1.5;
+    mon.style.transform = `scale(${sc.toFixed(3)}) rotate(${jig.toFixed(2)}deg)`;
+  });
+  [["害怕", 470, 560, "害怕"], ["生气", 520, 640, "生气"], ["委屈", 460, 720, "委屈"]].forEach(([txt, x, y, w]) => {
+    const c = abs("echip", txt, h, { left: x + "px", top: y + "px", color: "#D9614A" });
+    show(c, W("house1", w) - 0.05, "pop", 0.35, "back");
+    sfx(W("house1", w), "pop", 0.5);
+    hide(c, tAlarm - 0.2, "fade", 0.2);
+  });
+  // butler upstairs
+  const but = abs("h-butler", ART.butler("calm") + ART.butler("worried"), h);
+  const [bCalm, bWor] = but.querySelectorAll("svg");
+  bCalm.style.position = bWor.style.position = "absolute";
+  const tBut = W("house2", "理智小管家");
+  show(but, tBut - 0.1, "pop", 0.5, "back");
+  sfx(tBut, "pop", 0.8);
+  const tStuck = W("house3", "管家根本下不来");
+  hook((t) => {
+    const w = t >= tStuck ? 1 : 0;
+    bCalm.style.opacity = 1 - w;
+    bWor.style.opacity = w;
+  });
+  [["讲道理", 480, 250, "讲道理"], ["忍一忍", 520, 320, "忍一忍"], ["想办法", 470, 390, "想办法"]].forEach(([txt, x, y, w]) => {
+    const c = abs("echip", txt, h, { left: x + "px", top: y + "px", color: "#4A6FC2" });
+    show(c, W("house2", w) - 0.05, "pop", 0.35, "back");
+    sfx(W("house2", w), "pop", 0.5);
+    hide(c, tAlarm - 0.2, "fade", 0.2);
+  });
+  const scaf = abs("scaffold", "", h);
+  show(scaf, W("house2", "二十五岁") - 0.1, "wipe", 0.6);
+  hide(scaf, tAlarm, "fade", 0.3);
+  // crisis
+  const flash = h.querySelector(".downflash");
+  hook((t) => (flash.style.opacity = t >= tAlarm ? (0.18 + 0.18 * Math.max(0, Math.sin((t - tAlarm) * 9))).toFixed(3) : 0));
+  const alarm = abs("alarm", `<svg viewBox="0 0 90 70"><rect x="10" y="0" width="70" height="12" rx="4" fill="#3A3550"/><path d="M15 12 h60 v20 a30 30 0 0 1 -60 0z" fill="#E5484D"/><circle cx="34" cy="28" r="7" fill="#fff" opacity=".7"/></svg>`, h);
+  show(alarm, tAlarm - 0.1, "pop", 0.3);
+  sfx(tAlarm, "alarm", 0.7);
+  const tBlock = W("house3", "楼梯被堵住");
+  const bar = abs("barrier", "", h);
+  show(bar, tBlock, "slam", 0.35);
+  sfx(tBlock + 0.1, "hit", 0.9);
+  const dim = abs("updim", "", h);
+  show(dim, tStuck, "fade", 0.5);
+  const qq = abs("qq", "？？", h);
+  show(qq, tStuck + 0.3, "pop", 0.35, "back");
+
+  // right column: per segment
+  const side1 = abs("side", "", s);
+  show(side1, S("house1") + 0.2, "right", 0.5);
+  hide(side1, S("house2") - 0.3, "fade", 0.3);
+  el("div", "h", "大脑 = 两层小楼", side1);
+  const l1 = el("div", "sline card", `<span class="e">👾</span><div>楼下：<span style="color:#D9614A">情绪小怪兽</span></div>`, side1);
+  show(l1, tMon, "up", 0.45);
+  const l2 = el("div", "sline card", `<span class="e">⚡</span><div>一出生就上岗，反应快</div>`, side1);
+  show(l2, W("house1", "一出生"), "up", 0.45);
+  sfx(W("house1", "反应特别快"), "swish", 0.6);
+
+  const side2 = abs("side", "", s);
+  show(side2, S("house2") - 0.2, "right", 0.5);
+  hide(side2, S("house3") - 0.3, "fade", 0.3);
+  el("div", "h", "楼上还在装修", side2);
+  const l3 = el("div", "sline card", `<span class="e">🎩</span><div>楼上：<span style="color:#4A6FC2">理智小管家</span></div>`, side2);
+  show(l3, tBut, "up", 0.45);
+  const b25 = el("div", "bar25 card", `<div class="lbl">🛠 装修进度</div><div class="track"><div class="fill"></div><div class="pin">3岁宝宝在这里</div></div><div class="ends"><span>出生</span><span>约 25 岁完工</span></div>`, side2);
+  const t25 = W("house2", "二十五岁");
+  show(b25, t25 - 0.15, "up", 0.45);
+  anim(b25.querySelector(".fill"), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], t25 + 0.3, 0.8);
+  show(b25.querySelector(".pin"), t25 + 0.9, "pop", 0.35, "back");
+  sfx(t25 + 0.9, "pop", 0.6);
+
+  const side3 = abs("side", "", s);
+  show(side3, S("house3") - 0.2, "right", 0.5);
+  el("div", "h", "<span style='color:#E5484D'>崩溃那一刻</span>", side3);
+  [["🚨", "楼下警报大作", tAlarm], ["🚧", "楼梯被堵住", tBlock], ["🔌", "楼上断线：听不进道理", W("house3", "听不进道理")], ["📚", "绘本里的方法也想不起", W("house3", "想不起")]].forEach(([e, txt, t]) => {
+    const l = el("div", "sline card", `<span class="e">${e}</span><div>${txt}</div>`, side3);
+    show(l, t - 0.05, "up", 0.4);
+  });
+  sfx(W("house3", "听不进道理"), "wrong", 0.4);
+}
+
+/* ---- brake */
+{
+  const s = scene("brake", "c2", "dots");
+  const title = abs("brake-title", "不是<s>故意作</s>，是<span style='color:#2F8C80'>刹车还没长好</span>", s);
+  show(title, S("brake"), "down", 0.5);
+  markAt(title.querySelector("s"), W("brake", "不是她故意作") + 0.4, 0.35);
+  sfx(W("brake", "不是她故意作") + 0.4, "swish", 0.6);
+  const gasBox = abs("pedal-box", "", s, { left: "300px" });
+  const gas = abs("pedal", "", gasBox, { width: "280px", height: "400px", marginLeft: "-140px", background: "linear-gradient(#FF9F7F, #E9664F)", boxShadow: "0 20px 0 #B74C38" });
+  abs("pedal-lbl", "情绪油门", gasBox);
+  const gn = abs("pedal-note", "⚡ 很灵", gasBox, { color: "#D9614A" });
+  const tg = W("brake", "油门");
+  show(gasBox, tg - 0.2, "up", 0.5);
+  show(gn, tg + 0.3, "pop", 0.35);
+  hook((t) => (gas.style.transform = t > tg ? `perspective(600px) rotateX(${(10 + 10 * Math.max(0, Math.sin((t - tg) * 6))).toFixed(1)}deg)` : "none"));
+  sfx(tg, "riser", 0.4);
+
+  const brBox = abs("pedal-box", "", s, { left: "1020px" });
+  const br = abs("pedal", "", brBox, { width: "170px", height: "140px", marginLeft: "-85px", background: "linear-gradient(#7DD3C6, #3FA294)", boxShadow: "0 14px 0 #2F8C80" });
+  abs("pedal-lbl", "理智刹车", brBox);
+  const bn = abs("pedal-note", "🌱 还在长", brBox, { color: "#2F8C80" });
+  const tb = W("brake", "刹车");
+  show(brBox, tb - 0.2, "up", 0.5);
+  show(bn, tb + 0.3, "pop", 0.35);
+  anim(br, [{ transform: "scale(.6)" }, { transform: "scale(1)" }], tb, 2.4, { ease: "out" });
+  sfx(tb + 0.3, "ding", 0.5);
+}
+
+/* ================================================================= CHAPTER 2 */
+chapter("c2", "t1", "2", "明明努力安抚了<br>为什么越哄越糟？", "#F2836B");
+
+{
+  const s = scene("t1", "c3", "dots");
+  const ITEMS = [["t1", "话太多"], ["t2", "你比她还急"], ["t3", "安抚变成让步"], ["t4", "讲道理时机不对"], ["t5", "不爱被抱的孩子"]];
+  const sb = abs("sidebar", "", s);
+  show(sb, S("t1") - 0.2, "left", 0.5);
+  ITEMS.forEach(([id, txt], i) => {
+    const no = i < 4 ? i + 1 : "+";
+    const it = el("div", "sitem", `<span class="no">${no}</span>${txt}<div class="on"><span class="no">${no}</span>${txt}</div><span class="done">✓</span>`, sb);
+    const next = ITEMS[i + 1] ? ITEMS[i + 1][0] : "c3";
+    const on = it.querySelector(".on");
+    show(on, S(id) - 0.25, "fade", 0.3);
+    hide(on, S(next) - 0.3, "fade", 0.3);
+    if (ITEMS[i + 1]) show(it.querySelector(".done"), S(next) - 0.3, "pop", 0.3);
+  });
+
+  // --- t1 talk too much
+  {
+    const p = panel(s, "t1", "t2");
+    abs("ptitle", "坑 1 · 话太多", p);
+    const kid = abs("", ART.kid("cry"), p, { left: "420px", top: "180px", width: "380px" });
+    shake(kid, S("t1"), S("t2"), 1.6, 6);
+    const words = [
+      ["怎么了？", 120, 170, W("t1", "怎么了")],
+      ["别哭了！", 830, 150, W("t1", "别哭了")],
+      ["你听妈妈说…", 60, 400, W("t1", "你听妈妈说")],
+      ["乖～", 880, 360, W("t1", "额外的噪音") - 0.6],
+      ["不就是个姿势吗", 40, 560, W("t1", "额外的噪音") - 0.2],
+      ["你看你…", 860, 540, W("t1", "额外的噪音") + 0.2],
+      ["再哭我生气了", 330, 120, W("t1", "响得更大声") - 0.4],
+    ];
+    words.forEach(([w, x, y, t], i) => {
+      const b = bubble(w, x, y, p, x > 600);
+      show(b, t - 0.05, "pop", 0.3, "back");
+      sfx(t, "pop", 0.55);
+    });
+    const meter = abs("meter", "<i></i>", p, { left: "1150px", top: "160px", height: "460px" });
+    abs("meter-label", "警报音量", p, { left: "1110px", top: "640px" });
+    const lv = meter.querySelector("i");
+    hook((t) => {
+      let v = 0.25;
+      words.forEach(([, , , bt]) => (v += 0.11 * prog(t, bt, 0.3)));
+      lv.style.transform = `scaleY(${clamp(v + 0.03 * Math.sin(t * 20)).toFixed(3)})`;
+    });
+    const cap = abs("pcap", "<span>每一句话 = 额外的噪音</span>", p);
+    show(cap, W("t1", "每一句话"), "up", 0.4);
+  }
+
+  // --- t2 you are more anxious
+  {
+    const p = panel(s, "t2", "t3");
+    abs("ptitle", "坑 2 · 你比她还急", p);
+    const mom = abs("", ART.mom("anxious"), p, { left: "120px", top: "150px", width: "300px" });
+    const kid = abs("", ART.kid("cry"), p, { left: "800px", top: "170px", width: "300px" });
+    const tA = W("t2", "借用");
+    const arrow = abs("", `<svg viewBox="0 0 300 120" width="300"><path d="M10 80 Q150 -10 270 70" stroke="#F2836B" stroke-width="10" fill="none" stroke-dasharray="20 14" stroke-linecap="round"/><path d="M250 40 L285 78 L238 88z" fill="#F2836B"/></svg><div style="text-align:center;font-size:40px;font-weight:900;color:#D9614A;margin-top:-6px">情绪会传染</div>`, p, { left: "460px", top: "200px", width: "300px" });
+    show(arrow, tA - 0.1, "wipe", 0.6);
+    sfx(tA, "swish", 0.6);
+    const ecg = abs("", `<svg viewBox="0 0 1100 220" width="1100" height="220">
+      <text x="0" y="60" font-size="34" font-weight="900" fill="#2F8C80">妈妈</text>
+      <text x="0" y="170" font-size="34" font-weight="900" fill="#D9614A">孩子</text>
+      <path class="e1" fill="none" stroke="#4FB3A6" stroke-width="7" stroke-linejoin="round"/>
+      <path class="e2" fill="none" stroke="#F2836B" stroke-width="7" stroke-linejoin="round"/></svg>`, p, { left: "70px", top: "480px" });
+    const e1 = ecg.querySelector(".e1"), e2 = ecg.querySelector(".e2");
+    const tM = W("t2", "你越着急"), tK = W("t2", "感受到");
+    show(ecg, S("t2") + 0.2, "fade", 0.4);
+    hook((t) => {
+      const line = (y0, amp, phase) => {
+        let d = "";
+        for (let x = 0; x <= 980; x += 10) {
+          const u = x / 60 + t * 6 + phase;
+          const spike = Math.pow(Math.max(0, Math.sin(u)), 12);
+          const y = y0 - (spike * amp + Math.sin(u * 3.1) * amp * 0.12);
+          d += (x ? "L" : "M") + (100 + x) + " " + y.toFixed(1);
+        }
+        return d;
+      };
+      const a1 = 12 + 60 * prog(t, tM, 0.8);
+      const a2 = 18 + 70 * prog(t, tK, 0.8);
+      e1.setAttribute("d", line(60, a1, 0));
+      e2.setAttribute("d", line(170, a2, 1.2));
+      e1.setAttribute("stroke", t > tM ? "#E9A93B" : "#4FB3A6");
+    });
+    sfx(tM, "alarm", 0.25);
+    const cap = abs("pcap", "<span>孩子会“借用”你的情绪</span>", p);
+    show(cap, tA + 0.3, "up", 0.4);
+  }
+
+  // --- t3 soothing becomes giving in
+  {
+    const p = panel(s, "t3", "t4");
+    abs("ptitle", "坑 3 · 安抚变成了让步", p);
+    const cx = 610, cy = 400, R = 370, RY = 220;
+    const loop = abs("", `<svg viewBox="0 0 1200 700" width="1200" height="700"><ellipse class="ring" cx="${cx}" cy="${cy}" rx="${R}" ry="${RY}" fill="none" stroke="#F2836B" stroke-width="10" stroke-dasharray="18 16" opacity=".7"/>
+      <circle class="dot" r="18" fill="#E5484D"/></svg>`, p, { left: "0", top: "0" });
+    const dot = loop.querySelector(".dot");
+    const N = [
+      ["😭 大哭", -90, W("t3", "哭了就多看一集")],
+      ["📺 多看一集", 0, W("t3", "多看一集")],
+      ["📏 规则松动", 90, W("t3", "规则就松动")],
+      ["💡 学会：哭最管用", 180, W("t3", "最管用")],
+    ];
+    N.forEach(([txt, ang, t]) => {
+      const a = (ang * Math.PI) / 180;
+      const n = abs("chip", txt, p, { left: cx + R * Math.cos(a) + "px", top: cy + RY * Math.sin(a) + "px", transform: "translate(-50%,-50%)", fontSize: "42px" });
+      const inner = n;
+      show(inner, t - 0.1, [{ opacity: 0, transform: "translate(-50%,-50%) scale(.4)" }, { opacity: 1, transform: "translate(-50%,-50%) scale(1)" }], 0.4, "back");
+      sfx(t, "pop", 0.6);
+    });
+    const tLoop = W("t3", "哭了就多看一集");
+    hook((t) => {
+      const sp = t < tLoop ? 0 : (t - tLoop) * (1.2 + 0.25 * (t - tLoop));
+      const a = -Math.PI / 2 + sp;
+      dot.setAttribute("cx", (cx + R * Math.cos(a)).toFixed(1));
+      dot.setAttribute("cy", (cy + RY * Math.sin(a)).toFixed(1));
+      dot.style.opacity = t < tLoop ? 0 : 1;
+    });
+    const mid = abs("", "越哭越灵", p, { left: cx - 120 + "px", top: cy - 40 + "px", width: "240px", textAlign: "center", fontFamily: "var(--fun)", fontSize: "56px", color: "#D9614A" });
+    show(mid, W("t3", "很聪明"), "pop", 0.4);
+    const cap = abs("pcap", "<span>哭了就让步 → 她会学到：大哭最管用</span>", p);
+    show(cap, W("t3", "最管用") - 0.2, "up", 0.4);
+    sfx(W("t3", "最管用"), "wrong", 0.4);
+  }
+
+  // --- t4 wrong time for reasoning
+  {
+    const p = panel(s, "t4", "t5");
+    abs("ptitle", "坑 4 · 讲道理时机不对", p);
+    const ok = abs("chip", "✓ 绘本里的道理没错", p, { left: "60px", top: "160px", color: "#2F8C80" });
+    show(ok, W("t4", "道理没有错") - 0.2, "up", 0.4);
+    const up = abs("chip", `🎩 是讲给<span style="color:#4A6FC2">楼上管家</span>听的`, p, { left: "60px", top: "270px" });
+    show(up, W("t4", "楼上管家") - 0.3, "up", 0.4);
+    const bell = abs("", `<svg viewBox="0 0 300 300" width="300"><circle cx="150" cy="150" r="110" fill="#E5484D"/><circle cx="150" cy="150" r="80" fill="#FF6B6B"/><circle cx="150" cy="150" r="22" fill="#3A3550"/><rect x="138" y="250" width="24" height="40" fill="#3A3550"/>
+      <path class="w1" d="M20 80 q-30 70 0 140 M280 80 q30 70 0 140" stroke="#E5484D" stroke-width="10" fill="none" stroke-linecap="round"/></svg>
+      <div style="text-align:center;font-size:42px;font-weight:900;color:#E5484D">情绪最高点 🔥</div>`, p, { left: "760px", top: "130px", width: "300px" });
+    const tb = W("t4", "情绪最高点");
+    show(bell, tb - 0.1, "pop", 0.4, "back");
+    hook((t) => (bell.firstElementChild.style.transform = t > tb ? `rotate(${Math.sin(t * 50) * 6}deg)` : ""));
+    sfx(tb, "alarm", 0.6);
+    const say = abs("bubble", "📢 请保持冷静！", p, { left: "260px", top: "450px", fontSize: "60px" });
+    show(say, W("t4", "请保持冷静") - 0.1, "pop", 0.4, "back");
+    sfx(W("t4", "请保持冷静"), "boing", 0.7);
+    const cap = abs("pcap", "<span>道理没错，时机不对</span>", p);
+    show(cap, W("t4", "请保持冷静") + 0.6, "up", 0.4);
+  }
+
+  // --- t5 some kids don't want to be held
+  {
+    const p = panel(s, "t5", "c3");
+    abs("ptitle", "另外：有的孩子难受时不爱被抱", p);
+    const L = abs("card", "", p, { left: "40px", top: "150px", width: "560px", height: "500px" });
+    abs("", ART.mom("anxious"), L, { left: "40px", top: "90px", width: "220px" });
+    abs("", ART.kid("angry"), L, { left: "290px", top: "120px", width: "230px" });
+    abs("", "越抱越挣脱 ✗", L, { left: "0", right: "0", top: "400px", textAlign: "center", fontSize: "46px", fontWeight: 900, color: "#E5484D" });
+    show(L, W("t5", "你越抱") - 0.2, "up", 0.45);
+    sfx(W("t5", "你越抱"), "wrong", 0.4);
+    const R = abs("card", "", p, { left: "650px", top: "150px", width: "560px", height: "500px" });
+    abs("", ART.mom("calm"), R, { left: "30px", top: "90px", width: "200px" });
+    abs("", ART.kid("sad"), R, { left: "330px", top: "120px", width: "200px" });
+    abs("bubble", "我在这儿", R, { left: "40px", top: "20px", fontSize: "36px" });
+    abs("", "安静待在旁边 ✓", R, { left: "0", right: "0", top: "400px", textAlign: "center", fontSize: "46px", fontWeight: 900, color: "#2F8C80" });
+    show(R, W("t5", "安静地待在旁边") - 0.2, "up", 0.45);
+    sfx(W("t5", "安静地待在旁边"), "correct", 0.5);
+  }
+}
+
+/* ================================================================= CHAPTER 3 */
+chapter("c3", "wen", "3", "崩溃当下<br>三个字接住她", "#4FB3A6", (s) => {
+  const trio = abs("trio", "<div>稳</div><div>陪</div><div>守</div>", s);
+  trio.querySelectorAll("div").forEach((d, i) => {
+    const t = W("c3", "稳陪守"[i]);
+    show(d, t - 0.08, "pop", 0.4, "back");
+    sfx(t, "coin", 0.8);
+  });
+});
+
+{
+  const s = scene("wen", "swap", "dots");
+  const tabs = abs("tabs", "", s);
+  const KEYS = [["wen", "稳", "#4FB3A6", "pei"], ["pei", "陪", "#F2836B", "shou"], ["shou", "守", "#6C9CF0", "swap"]];
+  KEYS.forEach(([id, ch, c, next]) => {
+    const d = el("div", "", `${ch}<b style="background:${c}">${ch}</b>`, tabs);
+    const b = d.querySelector("b");
+    show(b, S(id) - 0.25, "pop", 0.35);
+    hide(b, S(next) - 0.3, "fade", 0.3);
+  });
+  // 稳
+  {
+    const p = el("div", "full", "", s);
+    show(p, S("wen") - 0.25, "fade", 0.4);
+    hide(p, S("pei") - 0.3, "fade", 0.3);
+    abs("bigchar", "稳<small>先稳住你自己</small>", p, { background: "#4FB3A6" });
+    const breath = abs("center", `<div class="ring" style="width:300px;height:300px;border-radius:50%;background:radial-gradient(#DDF3EE,#A8E0D6);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:#1F6F64"><span class="bt">吸气</span></div>`, p, { left: "600px", top: "250px", width: "420px", height: "420px" });
+    const ring = breath.querySelector(".ring"), bt = breath.querySelector(".bt");
+    hook((t) => {
+      const ph = (t - S("wen")) / 4;
+      const v = 0.5 - 0.5 * Math.cos(ph * 2 * Math.PI);
+      ring.style.transform = `scale(${(0.78 + 0.32 * v).toFixed(3)})`;
+      bt.textContent = Math.sin(ph * 2 * Math.PI) >= 0 ? "吸气…" : "呼气…";
+    });
+    const list = abs("col", "", p, { left: "1120px", top: "250px", gap: "26px" });
+    [["🌬️", "深呼吸", "深呼吸"], ["🐢", "放慢语速", "放慢语速"], ["⬇️", "蹲下来，和她一样高", "蹲下来"]].forEach(([e, txt, w]) => {
+      const c = el("div", "chip", `<span style="font-size:48px">${e}</span>${txt}`, list);
+      show(c, W("wen", w) - 0.1, "right", 0.4);
+      sfx(W("wen", w), "pop", 0.5);
+    });
+    const q = abs("quote card", "你的平静，就是孩子<b>借来的刹车</b>", p);
+    show(q, W("wen", "你的平静") - 0.1, "up", 0.5);
+    sfx(W("wen", "借来的刹车"), "ding", 0.5);
+  }
+  // 陪
+  {
+    const p = el("div", "full", "", s);
+    show(p, S("pei") - 0.25, "fade", 0.4);
+    hide(p, S("shou") - 0.3, "fade", 0.3);
+    abs("bigchar", "陪<small>少说话，多陪伴</small>", p, { background: "#F2836B" });
+    const many = abs("col", "", p, { left: "620px", top: "250px", gap: "18px" });
+    ["怎么了？你说话呀", "别哭了别哭了", "你听我说，这个姿势…"].forEach((txt) => {
+      el("div", "chip", `<span style="text-decoration:line-through;text-decoration-thickness:4px;color:#9A94AC">${txt}</span>`, many);
+    });
+    show(many, S("pei"), "fade", 0.4);
+    hide(many, W("pei", "只说一句") + 0.2, "dim", 0.4);
+    sfx(W("pei", "少说话"), "wrong", 0.35);
+    const one = abs("bubble", "你很难受，妈妈在这儿。", p, { left: "1130px", top: "250px", fontSize: "60px", fontFamily: "var(--hand)", padding: "30px 46px" });
+    show(one, W("pei", "你很难受") - 0.1, "pop", 0.45, "back");
+    sfx(W("pei", "你很难受"), "ding", 0.6);
+    const opts = abs("row", "", p, { left: "620px", top: "560px", gap: "30px" });
+    [["🤗", "要抱就抱", "她要抱就抱"], ["👀", "推开你，就待在她看得见的地方", "推开你"]].forEach(([e, txt, w]) => {
+      const c = el("div", "chip", `<span style="font-size:48px">${e}</span>${txt}`, opts);
+      show(c, W("pei", w) - 0.1, "up", 0.4);
+      sfx(W("pei", w), "pop", 0.5);
+    });
+  }
+  // 守
+  {
+    const p = el("div", "full", "", s);
+    show(p, S("shou") - 0.25, "fade", 0.4);
+    abs("bigchar", "守<small>接纳情绪，守住界限</small>", p, { background: "#6C9CF0" });
+    const okc = abs("card", `<div style="font-size:52px;font-weight:900;color:#2F8C80">✓ 情绪，都允许</div><div style="font-size:44px;font-weight:700;margin-top:24px;line-height:1.7">想哭 · 生气 · 难过</div>`, p, { left: "600px", top: "240px", width: "580px", height: "300px", padding: "44px", borderTop: "14px solid #4FB3A6" });
+    show(okc, W("shou", "想哭可以") - 0.15, "up", 0.45);
+    sfx(W("shou", "想哭可以"), "correct", 0.5);
+    const noc = abs("card", `<div style="font-size:52px;font-weight:900;color:#E5484D">✗ 行为，有边界</div><div style="font-size:44px;font-weight:700;margin-top:24px;line-height:1.7">打人 · 扔东西</div>`, p, { left: "1220px", top: "240px", width: "580px", height: "300px", padding: "44px", borderTop: "14px solid #E5484D" });
+    show(noc, W("shou", "打人") - 0.15, "up", 0.45);
+    sfx(W("shou", "打人"), "wrong", 0.4);
+    const q = abs("quote card", "不因为哭，就<b>改变原本的规则</b>", p, { top: "620px" });
+    show(q, W("shou", "不因为哭") - 0.1, "up", 0.45);
+    sfx(W("shou", "改变原本的规则"), "stamp", 0.5);
+  }
+}
+
+/* ---- swap phrases */
+{
+  const s = scene("swap", "after", "dots");
+  show(abs("swap-title", "这几句话，直接换掉", s), S("swap"), "down", 0.5);
+  const R = [
+    ["别哭了！", "你很难过，我知道。"],
+    ["这有什么好哭的？", "这件事对你很重要。"],
+    ["再哭我就不管你了！", "我就在这儿，等你好一点。"],
+  ];
+  R.forEach(([no, yes], i) => {
+    const row = abs("srow", "", s, { top: 280 + i * 200 + "px" });
+    const a = el("div", "scard no", `<span class="m" style="background:#E5484D">✗</span><span>${no}</span>`, row);
+    const ar = el("div", "arrow", "→", row);
+    const b = el("div", "scard yes", `<span class="m" style="background:#4FB3A6">✓</span>${yes}`, row);
+    const ta = W("swap", "别说", i), tb = W("swap", "换成", i);
+    show(a, ta - 0.1, "left", 0.4);
+    sfx(ta, "blip", 0.5);
+    show(ar, tb - 0.2, "fade", 0.3);
+    show(b, tb - 0.1, "flip", 0.5);
+    sfx(tb, "correct", 0.45);
+  });
+}
+
+/* ---- after calm */
+{
+  const s = scene("after", "c4", "sunset");
+  const hug = abs("", "", s, { left: "130px", top: "200px", width: "720px", height: "640px" });
+  abs("", ART.mom("calm"), hug, { left: "40px", top: "20px", width: "400px" });
+  abs("", ART.kid("happy"), hug, { left: "330px", top: "200px", width: "340px" });
+  const heart = abs("", ART.heart(), hug, { left: "330px", top: "0", width: "120px" });
+  show(hug, S("after"), "up", 0.6);
+  show(heart, W("after", "抱一抱") - 0.1, "pop", 0.45, "back");
+  hook((t) => (heart.firstElementChild.style.transform = `scale(${(1 + 0.06 * Math.sin(t * 6)).toFixed(3)})`));
+  const steps = abs("steps", "", s);
+  const ti = el("div", "", `<div style="font-family:var(--fun);font-size:68px;margin-bottom:30px">平静之后，才是讲道理的时候</div>`, steps);
+  show(ti, W("after", "讲道理的好时候") - 0.3, "down", 0.45);
+  [
+    ["1", "抱一抱她", "", "抱一抱"],
+    ["2", "帮她说出感受", "“你刚才很生气，对吗？”", "说出刚才的感受"],
+    ["3", "一起想办法", "“下次生气了，可以怎么办？”", "一起想想"],
+  ].forEach(([n, t, sm, w]) => {
+    const st = el("div", "stp card", `<span class="n">${n}</span><div>${t}${sm ? `<small>${sm}</small>` : ""}</div>`, steps);
+    show(st, W("after", w) - 0.1, "right", 0.45);
+    sfx(W("after", w), "pop", 0.55);
+  });
+  const book = el("div", "stp card", `<span class="n" style="background:#E9A93B">📚</span><div>这时候，情绪绘本才真正派上用场</div>`, steps);
+  show(book, W("after", "情绪绘本") - 0.1, "up", 0.45);
+  sfx(W("after", "派上用场"), "ding", 0.6);
+}
+
+/* ================================================================= CHAPTER 4 */
+chapter("c4", "p1", "4", "比接住崩溃更重要的<br>是减少崩溃的燃料", "#E9A93B");
+
+{
+  const s = scene("p1", "bed", "dots");
+  const ITEMS = [["p1", "🔋", "盯紧饿和累"], ["p2", "⏰", "转换先预告"], ["p3", "🧦", "给点选择权"], ["p4", "💗", "15分钟专属陪伴"]];
+  const sb = abs("sidebar", "", s);
+  show(sb, S("p1") - 0.2, "left", 0.5);
+  ITEMS.forEach(([id, e, txt], i) => {
+    const it = el("div", "sitem", `<span class="no">${e}</span>${txt}<div class="on" style="background:#E9A93B"><span class="no" style="color:#E9A93B">${e}</span>${txt}</div><span class="done">✓</span>`, sb);
+    const next = ITEMS[i + 1] ? ITEMS[i + 1][0] : "bed";
+    const on = it.querySelector(".on");
+    show(on, S(id) - 0.25, "fade", 0.3);
+    hide(on, S(next) - 0.3, "fade", 0.3);
+    if (ITEMS[i + 1]) show(it.querySelector(".done"), S(next) - 0.3, "pop", 0.3);
+  });
+  // p1
+  {
+    const p = panel(s, "p1", "p2");
+    abs("ptitle", "第一 · 盯紧饿和累", p);
+    const bat = abs("", `<div style="width:300px;height:150px;border:12px solid #3A3550;border-radius:30px;position:relative;padding:12px">
+        <div class="lv" style="height:100%;border-radius:12px;background:#4FB3A6;transform-origin:left"></div>
+        <div style="position:absolute;right:-40px;top:40px;width:22px;height:50px;background:#3A3550;border-radius:0 10px 10px 0"></div></div>
+        <div style="font-size:44px;font-weight:900;margin-top:20px;text-align:center">困了 · 饿了 = 崩溃燃料</div>`, p, { left: "40px", top: "170px", width: "500px" });
+    const lv = bat.querySelector(".lv");
+    const tk = W("p1", "困了");
+    show(bat, S("p1") + 0.2, "up", 0.45);
+    hook((t) => {
+      const v = 1 - 0.85 * prog(t, tk - 0.3, 1.2);
+      lv.style.transform = `scaleX(${v.toFixed(3)})`;
+      lv.style.background = v < 0.35 ? "#E5484D" : v < 0.6 ? "#FFC857" : "#4FB3A6";
+    });
+    sfx(tk, "blip", 0.5);
+    const kid = abs("", ART.kid("sleepy"), p, { left: "1010px", top: "520px", width: "180px" });
+    show(kid, W("p1", "累过头了") - 0.3, "pop", 0.4);
+    const list = abs("col", "", p, { left: "560px", top: "200px", gap: "26px" });
+    [["🌙", "入睡时间提前半小时", "提前半小时"], ["💡", "睡前 1 小时调暗灯光", "调暗灯光"], ["🎮", "少玩刺激的游戏", "刺激的游戏"]].forEach(([e, txt, w]) => {
+      const c = el("div", "chip", `<span style="font-size:50px">${e}</span>${txt}`, list);
+      c.style.fontSize = "46px";
+      show(c, W("p1", w) - 0.15, "right", 0.4);
+      sfx(W("p1", w), "pop", 0.5);
+    });
+    const cap = abs("pcap", "<span>睡前为姿势大哭，常常是累过头了</span>", p);
+    show(cap, W("p1", "比如睡觉时") - 0.1, "up", 0.4);
+  }
+  // p2
+  {
+    const p = panel(s, "p2", "p3");
+    abs("ptitle", "第二 · 转换之前先预告", p);
+    const tm = abs("", `<svg viewBox="0 0 360 360" width="360"><circle cx="180" cy="180" r="150" fill="#fff" stroke="#EEE7F3" stroke-width="26"/>
+      <circle class="arc" cx="180" cy="180" r="150" fill="none" stroke="#E9A93B" stroke-width="26" stroke-linecap="round" transform="rotate(-90 180 180)"/>
+      <text class="num" x="180" y="205" text-anchor="middle" font-size="84" font-weight="900" fill="#3A3550">5:00</text></svg>`, p, { left: "100px", top: "170px" });
+    const arc = tm.querySelector(".arc"), num = tm.querySelector(".num");
+    const C = 2 * Math.PI * 150;
+    arc.style.strokeDasharray = C;
+    const t5 = W("p2", "再玩五分钟");
+    show(tm, t5 - 0.2, "pop", 0.4);
+    hook((t) => {
+      const left = 300 - Math.floor(clamp(t - t5, 0, 99) * 1);
+      num.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
+      arc.style.strokeDashoffset = (C * (1 - left / 300)).toFixed(1);
+    });
+    sfx(t5, "tick", 0.6);
+    const b = abs("bubble", "再玩 5 分钟，我们就去洗澡～", p, { left: "540px", top: "220px", fontSize: "50px", fontFamily: "var(--hand)" });
+    show(b, t5, "pop", 0.4, "back");
+    const c2 = abs("chip", "🧠 给大脑留一点准备时间", p, { left: "540px", top: "420px", fontSize: "44px" });
+    show(c2, W("p2", "准备时间") - 0.4, "up", 0.4);
+    const cap = abs("pcap", "<span>少一次“突然袭击”，就少一次崩溃</span>", p);
+    show(cap, W("p2", "突然袭击") - 0.2, "up", 0.4);
+  }
+  // p3
+  {
+    const p = panel(s, "p3", "p4");
+    abs("ptitle", "第三 · 给她一点选择权", p);
+    const sock = (c) => `<svg viewBox="0 0 160 240" width="200"><path d="M40 10 h80 v120 q0 30 -30 50 l-40 30 q-40 20 -50 -20 q-6 -24 20 -40 l20 -16z" fill="${c}"/><rect x="36" y="6" width="88" height="34" rx="10" fill="#fff" opacity=".6"/></svg>`;
+    const kid = abs("", ART.kid("happy"), p, { left: "460px", top: "260px", width: "300px" });
+    const r = abs("", sock("#E5484D"), p, { left: "150px", top: "220px" });
+    const bl = abs("", sock("#6C9CF0"), p, { left: "880px", top: "220px" });
+    show(r, W("p3", "红袜子") - 0.15, "pop", 0.4, "back");
+    show(bl, W("p3", "蓝袜子") - 0.15, "pop", 0.4, "back");
+    show(kid, W("p3", "红袜子") - 0.3, "up", 0.4);
+    sfx(W("p3", "红袜子"), "pop", 0.6);
+    sfx(W("p3", "蓝袜子"), "pop", 0.6);
+    const b = abs("bubble", "你想穿哪一双？", p, { left: "420px", top: "130px", fontSize: "50px", fontFamily: "var(--hand)" });
+    show(b, W("p3", "你想穿") - 0.1, "pop", 0.4);
+    const cap = abs("pcap", "<span>有了掌控感，对抗就会少很多</span>", p);
+    show(cap, W("p3", "掌控感") - 0.2, "up", 0.4);
+    sfx(W("p3", "掌控感"), "ding", 0.5);
+  }
+  // p4
+  {
+    const p = panel(s, "p4", "bed");
+    abs("ptitle", "第四 · 每天 15 分钟专属陪伴", p);
+    const tank = abs("", `<div style="width:260px;height:440px;border:12px solid #3A3550;border-radius:40px;position:relative;overflow:hidden;background:#fff">
+      <div class="lq" style="position:absolute;left:0;right:0;bottom:0;height:100%;background:linear-gradient(#FF9B8A,#F2836B);transform-origin:bottom"></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px">💗</div></div>
+      <div style="font-size:42px;font-weight:900;text-align:center;margin-top:16px">情绪账户</div>`, p, { left: "120px", top: "150px", width: "260px" });
+    const lq = tank.querySelector(".lq");
+    const tf = W("p4", "存满了");
+    show(tank, S("p4") + 0.2, "up", 0.45);
+    hook((t) => (lq.style.transform = `scaleY(${(0.15 + 0.85 * prog(t, S("p4") + 1, tf - S("p4"), ease.inOut)).toFixed(3)})`));
+    sfx(tf, "levelup", 0.5);
+    const list = abs("col", "", p, { left: "520px", top: "220px", gap: "26px" });
+    [["⏱️", "每天 15 分钟，只属于她", "十五分钟"], ["📵", "放下手机", "放下手机"], ["🧸", "跟着她玩，她说了算", "跟着她玩"]].forEach(([e, txt, w]) => {
+      const c = el("div", "chip", `<span style="font-size:50px">${e}</span>${txt}`, list);
+      c.style.fontSize = "46px";
+      show(c, W("p4", w) - 0.15, "right", 0.4);
+      sfx(W("p4", w), "pop", 0.5);
+    });
+    const cap = abs("pcap", "<span>存满了，就不用靠大哭换关注</span>", p);
+    show(cap, W("p4", "不需要") - 0.2, "up", 0.4);
+  }
+}
+
+/* ---- bedtime */
+{
+  const s = scene("bed", "doctor", "night");
+  for (let i = 0; i < 40; i++) {
+    const st = abs("star", "", s, { left: (i * 397) % 1900 + "px", top: (i * 151) % 520 + 20 + "px" });
+    const ph = i * 0.7;
+    hook((t) => (st.style.opacity = (0.35 + 0.65 * Math.abs(Math.sin(t * 0.9 + ph))).toFixed(2)));
+  }
+  abs("moon", "", s);
+  const kid = abs("", ART.kid("sad", "#B9A5E8"), s, { left: "180px", top: "150px", width: "330px" });
+  show(kid, S("bed"), "up", 0.5);
+  const title = abs("", "睡前哭：不争对错，先接住", s, { left: "640px", top: "110px", fontFamily: "var(--fun)", fontSize: "60px", color: "#FFE7A0" });
+  show(title, S("bed") + 0.2, "down", 0.4);
+  const nb = abs("nbubble", "嗯，不舒服，我们慢慢调。", s, { top: "220px" });
+  show(nb, W("bed", "嗯") - 0.1, "pop", 0.45, "back");
+  sfx(W("bed", "嗯"), "ding", 0.5);
+  const chips = abs("row", "", s, { left: "660px", top: "420px", gap: "26px" });
+  [["🔉", "声音放低", "声音放低"], ["🐢", "动作放慢", "动作放慢"]].forEach(([e, txt, w]) => {
+    const c = el("div", "chip", `<span style="font-size:46px">${e}</span>${txt}`, chips);
+    c.style.color = "var(--ink)";
+    show(c, W("bed", w) - 0.1, "up", 0.4);
+  });
+  const rt = abs("routine", "", s);
+  const R = [["🛁", "洗澡"], ["🪥", "刷牙"], ["📖", "讲故事"], ["💡", "关灯"], ["🤲", "拍一拍"]];
+  R.forEach(([e, txt], i) => {
+    if (i) {
+      const a = el("div", "rarrow", "›", rt);
+      show(a, W("bed", txt) - 0.2, "fade", 0.3);
+    }
+    const c = el("div", "rstep", `<span class="e">${e}</span>${txt}`, rt);
+    show(c, W("bed", txt) - 0.12, "pop", 0.4, "back");
+    sfx(W("bed", txt), "pop", 0.5);
+  });
+  const fin = abs("", "每天一样 = 大脑的安全感", s, { left: "0", right: "0", top: "860px", textAlign: "center", fontFamily: "var(--hand)", fontSize: "54px", color: "#FFE7A0" });
+  show(fin, W("bed", "每天一样") - 0.1, "up", 0.45);
+  sfx(W("bed", "安全感"), "ding", 0.5);
+  // bring kid to sleepy when routine done
+  const kid2 = abs("", ART.kid("sleepy", "#B9A5E8"), s, { left: "180px", top: "150px", width: "330px" });
+  show(kid2, W("bed", "拍一拍"), "fade", 0.6);
+}
+
+/* ---- doctor */
+{
+  const s = scene("doctor", "end1", "dots");
+  const card = abs("doc-card card", `<h2>🩺 出现这些情况，建议咨询医生</h2><div class="where">儿童保健科 / 发育行为儿科</div>`, s);
+  show(card, S("doctor"), "up", 0.5);
+  [["几乎每天都要崩溃好几次", "几乎每天"], ["一次哭闹经常超过 25 分钟", "超过25分钟"], ["会伤害自己，或攻击别人", "伤害自己"], ["5 岁以后依然很频繁，影响睡眠和上学", "五岁以后"]].forEach(([txt, w], i) => {
+    const d = el("div", "ditem", `<span class="n">${i + 1}</span>${txt}`, card);
+    show(d, W("doctor", w) - 0.15, "right", 0.4);
+    sfx(W("doctor", w), "tap", 0.8);
+  });
+  show(abs("disclaimer", "本视频为育儿科普，不能替代医生的专业评估", s), S("doctor") + 0.4, "fade", 0.5);
+}
+
+/* ---- ending 1 */
+{
+  const s = scene("end1", "end2", "sunset");
+  const hug = abs("", "", s, { left: "110px", top: "220px", width: "720px", height: "640px" });
+  abs("", ART.mom("calm"), hug, { left: "30px", top: "20px", width: "400px" });
+  abs("", ART.kid("calm"), hug, { left: "320px", top: "200px", width: "340px" });
+  const hearts = [];
+  for (let i = 0; i < 6; i++) hearts.push(abs("", ART.heart(["#F2836B", "#FF9B8A", "#FFC857"][i % 3]), s, { left: 200 + i * 110 + "px", top: "800px", width: 50 + (i % 3) * 14 + "px" }));
+  hook((t) => hearts.forEach((h, i) => {
+    const ph = ((t - S("end1")) * 0.18 + i * 0.17) % 1;
+    h.style.transform = `translate(${Math.sin(t + i) * 30}px, ${-ph * 700}px)`;
+    h.style.opacity = t < S("end1") ? 0 : (Math.sin(ph * Math.PI) * 0.9).toFixed(2);
+  }));
+  show(hug, S("end1"), "up", 0.6);
+  const tx = abs("endtext", "", s);
+  [
+    ["你读过的每一本绘本，", "每一本绘本"],
+    ["每一次安抚，", "每一次安抚"],
+    ["都<b>没有白费</b>。", "都没有白费"],
+    ["孩子学会管理情绪，", "孩子学会"],
+    ["靠的不是一次说教，", "靠的不是"],
+    ["而是一次又一次，", "而是一次又一次"],
+    ["被你<b>稳稳地接住</b>。", "被你稳稳地接住"],
+  ].forEach(([ln, w]) => {
+    const l = el("span", "ln", ln, tx);
+    show(l, W("end1", w) - 0.15, "blur", 0.6);
+  });
+}
+
+/* ---- ending 2 */
+{
+  const s = scene("end2", null, "sunset");
+  const sum = abs("sum", "崩溃会过去，<span style='color:#D9614A'>爱会留下</span>", s);
+  show(sum, S("end2"), "blur", 0.7);
+  const row = abs("sumrow", "", s);
+  [["稳", "#4FB3A6", "先稳住自己"], ["陪", "#F2836B", "少说多陪伴"], ["守", "#6C9CF0", "守住界限"]].forEach(([c, col, d]) => {
+    const card = el("div", "sumcard card", `<div class="c" style="background:${col}">${c}</div><div class="d">${d}</div>`, row);
+    const t = W("end2", c);
+    show(card, t - 0.1, "pop", 0.45, "back");
+    sfx(t, "coin", 0.7);
+  });
+  const cta = abs("cta", "<span>转给身边同样在熬的爸爸妈妈 ❤</span>", s);
+  show(cta, W("end2", "觉得有用") - 0.1, "up", 0.5);
+  hook((t) => (cta.firstElementChild.style.transform = t > W("end2", "转给") ? `scale(${(1 + 0.03 * Math.sin(t * 5)).toFixed(3)})` : ""));
+  const refs = abs("refs", "参考：Siegel & Bryson《全脑教养法》；美国儿科学会 HealthyChildren.org「Temper Tantrums」；Belden et al., J Pediatr 2008", s);
+  show(refs, W("end2", "觉得有用"), "fade", 0.6);
+}
+
+topbar();
+</script>
+</body>
+</html>

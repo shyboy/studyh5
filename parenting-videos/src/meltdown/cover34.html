@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../lib/base.css">
+<style>
+  html, body, #stage { width: 1080px; height: 1440px; }
+  #stage { background: radial-gradient(circle at 50% 62%, #FFE9DF 0%, #FFC9B5 50%, #F7A88F 100%); }
+  .rays { position: absolute; left: 540px; top: 860px; width: 2800px; height: 2800px; margin: -1400px 0 0 -1400px; border-radius: 50%;
+    background: repeating-conic-gradient(rgba(255,255,255,.24) 0 7deg, transparent 7deg 18deg); }
+  .pill { left: 50%; top: 78px; transform: translateX(-50%); font-size: 38px; font-weight: 900; color: #fff; background: var(--ink);
+    padding: 14px 36px; border-radius: 40px; letter-spacing: 3px; white-space: nowrap; }
+  .t1, .t2 { left: 0; right: 0; text-align: center; font-family: var(--fun); font-size: 210px; line-height: 1; letter-spacing: 8px; white-space: nowrap; }
+  .t1 { top: 190px; color: var(--coral-d); text-shadow: 0 10px 0 rgba(140,47,47,.15); }
+  .t2 { top: 410px; color: var(--ink); text-shadow: 0 10px 0 rgba(58,53,80,.12); }
+  .kid { left: 230px; top: 600px; width: 620px; transform: rotate(-2deg); }
+  .wah { left: 78px; top: 670px; font-family: var(--fun); font-size: 108px; color: var(--coral-d);
+    -webkit-text-stroke: 4px #fff; paint-order: stroke fill; transform: rotate(-12deg); }
+  .stamp-wrap { left: 50%; top: 1148px; transform: translateX(-50%); }
+  .stamp { padding: 4px 36px; border: 12px solid var(--red); border-radius: 24px; color: var(--red); font-family: var(--fun);
+    font-size: 108px; letter-spacing: 8px; background: rgba(255,246,236,.92); transform: rotate(-7deg); white-space: nowrap; }
+  .sub { left: 50%; bottom: 52px; transform: translateX(-50%); font-size: 46px; font-weight: 900; background: #fff;
+    padding: 16px 36px; border-radius: 26px; box-shadow: 0 14px 30px rgba(58,53,80,.14); white-space: nowrap; }
+  .sub b { color: #fff; background: var(--mint); padding: 2px 16px; border-radius: 14px; margin: 0 4px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="rays"></div>
+  <div class="abs pill">情绪爆发期 · 育儿科普</div>
+  <div class="abs t1">越哄</div>
+  <div class="abs t2">越哭？</div>
+  <div class="abs wah">哇——</div>
+  <div class="abs kid" id="kid"></div>
+  <div class="abs stamp-wrap"><div class="stamp">哄错了！</div></div>
+  <div class="abs sub">3个字接住她：<b>稳</b><b>陪</b><b>守</b></div>
+</div>
+<script src="../lib/art.js"></script>
+<script>document.getElementById("kid").innerHTML = ART.kid("cry");</script>
+</body>
+</html>
